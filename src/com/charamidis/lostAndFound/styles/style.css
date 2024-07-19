@@ -1,0 +1,53 @@
+/* style.css */
+.root {
+    -fx-font-family: 'Segoe UI', sans-serif;
+    -fx-background-color: #f0f0f0;
+}
+
+.label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #333;
+}
+
+
+#logo{
+-fx-font-size: 40px;
+-fx-font-family: 'Arial Black';
+-fx-font-weight: bold;
+-fx-text-fill: #336699;
+-fx-padding: 8px;
+-fx-underline: true;
+-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0);
+
+}
+
+.text-field, .password-field {
+    -fx-pref-width: 250px;
+    -fx-pref-height: 30px;
+    -fx-padding: 8px;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
+.button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-pref-width: 100px;
+    -fx-pref-height: 35px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #45a049;
+}
+
+.vbox {
+    -fx-padding: 20px;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+}
