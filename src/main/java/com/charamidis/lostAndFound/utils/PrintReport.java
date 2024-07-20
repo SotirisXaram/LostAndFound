@@ -157,7 +157,6 @@ public class PrintReport {
             // Write the document to a file
             document.write(out);
 
-            System.out.println("Document created successfully at " + filePathApodixi);
             new MessageBoxOk("Success Print the file");
         }catch (IOException e){
             logger.log(Level.SEVERE,"Cant print the file IO exception in printReport",e);

@@ -337,6 +337,9 @@ public class FormRecord {
                   new ReturnScreen(conn,user,listView.getSelectionModel().getSelectedItem());
               }
 
+              set.close();
+              btnStm.close();
+
           } catch (SQLException ex) {
              logger.log(Level.SEVERE,"Cannot return items sql problem",ex);
           }
@@ -521,7 +524,8 @@ public class FormRecord {
                     }finally{
                     enumFormState = EnumFormState.VIEW;
                     changeState(enumFormState,c);
-                    listView.getItems().add(0,c);
+                    listView.getItems().clear();
+                    loadDB(conn);
                     listView.getSelectionModel().select(c);
 
                     }
