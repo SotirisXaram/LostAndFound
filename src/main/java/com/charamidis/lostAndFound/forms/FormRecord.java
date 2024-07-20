@@ -38,6 +38,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,6 +58,7 @@ public class FormRecord {
     User currUser;
     Connection connection;
     private static final Logger logger = AppLogger.getLogger();
+
 
     public FormRecord(Connection conn, User user){
 
@@ -299,8 +301,7 @@ public class FormRecord {
             btnReturn.setDisable(false);
 
             if (newValue != null) {
-                Record selectedItem = newValue;
-                int itemId = selectedItem.getId();
+                int itemId = newValue.getId();
 
                 try {
                     String query = "SELECT id FROM returns WHERE id = ?";
@@ -310,8 +311,6 @@ public class FormRecord {
 
                     if (set.next()) {
                         btnReturn.setDisable(true);
-                    } else {
-                        btnReturn.setDisable(false);
                     }
 
                     set.close();
@@ -320,11 +319,34 @@ public class FormRecord {
                     new MessageBoxOk(e.getMessage());
                     logger.log(Level.SEVERE,"Error with form record with sql conn ",e);
                 }
-            } else {
-                btnReturn.setDisable(false);
             }
         });
 
+
+        btnReturn.setOnAction(e->{
+
+          int itemId = listView.getSelectionModel().getSelectedItem().getId();
+
+          try{
+              String query = "SELECT id FROM returns WHERE id = ?";
+              PreparedStatement btnStm = conn.prepareStatement(query);
+              btnStm.setInt(1, itemId);
+              ResultSet set = btnStm.executeQuery();
+
+              if(!set.next() && listView.getSelectionModel().getSelectedItem()!=null){
+                  new ReturnScreen(conn,user,listView.getSelectionModel().getSelectedItem());
+              }
+
+          } catch (SQLException ex) {
+             logger.log(Level.SEVERE,"Cannot return items sql problem",ex);
+          }
+
+        });
+
+
+
+
+//Barcode
         listView.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.B && event.isShiftDown() && event.isControlDown()) {
                 String uid = null;
@@ -347,15 +369,6 @@ public class FormRecord {
 
             }
         });
-
-
-        btnReturn.setOnAction(e->{
-            if(listView.getSelectionModel().getSelectedItem()!=null){
-                new ReturnScreen(conn,user,listView.getSelectionModel().getSelectedItem());
-            }
-        });
-
-
 
 
         buttonsCrud.setSpacing(10);
