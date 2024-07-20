@@ -57,10 +57,6 @@ public class Record implements Serializable {
         return record_date;
     }
 
-    public void setRecord_date(String record_date) {
-        this.record_date = record_date;
-    }
-
     public Integer getOfficer_id() {
         return officer_id;
     }
@@ -169,9 +165,6 @@ public class Record implements Serializable {
         return record_time;
     }
 
-    public void setRecord_time(String record_time) {
-        this.record_time = record_time;
-    }
 
     @Override
     public String toString() {

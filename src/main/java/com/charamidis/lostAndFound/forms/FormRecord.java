@@ -230,13 +230,18 @@ public class FormRecord {
         btnEdit = new Button();
         btnEdit.setGraphic(new ImageView(new Image("edit_9333897.png",16,16,true,true)));
         btnEdit.setOnAction(e->{
-            enumFormState = EnumFormState.EDIT;
-            changeState(enumFormState,listView.getSelectionModel().getSelectedItem());
-            txtFounderLastName.requestFocus();
+            if(listView.getSelectionModel().getSelectedItem()!=null){
+                enumFormState = EnumFormState.EDIT;
+                changeState(enumFormState,listView.getSelectionModel().getSelectedItem());
+                txtFounderLastName.requestFocus();
+            }
+
         });
 
         btnDelete = new Button();
+
         btnDelete.setOnAction(e->{
+            if(listView.getSelectionModel().getSelectedItem()!=null){
                 MessageBoxOk m = new MessageBoxOk("Θέλετε σίγουρα να διαγράψετε την εγγραφή?");
                 boolean response = m.getRes();
                 if(response){
@@ -246,7 +251,8 @@ public class FormRecord {
                     if(listView.getItems().size()>0){
                         listView.getSelectionModel().select(0);
                     }else{
-                        changeState(EnumFormState.ADD,new Record());
+                        enumFormState = EnumFormState.ADD;
+                        changeState(enumFormState,new Record());
                     }
 
                     try{
@@ -258,10 +264,17 @@ public class FormRecord {
                         stm.close();
                     }catch (SQLException ex){
                         new MessageBoxOk(ex.getMessage());
-                      logger.log(Level.FINE,"Error with form record to delete ",ex);
+                        logger.log(Level.FINE,"Error with form record to delete ",ex);
                     }
 
                 }
+                if(listView.getItems().isEmpty()){
+                    window.close();
+                }
+
+
+            }
+
 
         });
 
@@ -272,8 +285,9 @@ public class FormRecord {
         btnDelete.setGraphic(new ImageView(new Image("delete_12379137.png",16,16,true,true)));
         btnPrint.setOnAction(e->{
             Record record = listView.getSelectionModel().getSelectedItem();
-
-            new PrintReport(record,conn);
+            if(!listView.getItems().isEmpty()){
+                new PrintReport(record,conn);
+            }
         });
 
         btnReturn = new Button("Επιστροφή");
@@ -336,7 +350,9 @@ public class FormRecord {
 
 
         btnReturn.setOnAction(e->{
-            new ReturnScreen(conn,user,listView.getSelectionModel().getSelectedItem());
+            if(listView.getSelectionModel().getSelectedItem()!=null){
+                new ReturnScreen(conn,user,listView.getSelectionModel().getSelectedItem());
+            }
         });
 
 
@@ -417,6 +433,8 @@ public class FormRecord {
 
 
                         updateStmt.close();
+
+
                     } catch (SQLException ex) {
                         new MessageBoxOk(ex.getMessage());
                         logger.log(Level.FINE,"Error with form record with sql ",ex);
@@ -424,6 +442,7 @@ public class FormRecord {
                     } finally{
                         enumFormState = EnumFormState.VIEW;
                         changeState(enumFormState,c);
+
                     }
                     
                 }
@@ -489,7 +508,6 @@ public class FormRecord {
                     }finally{
                     enumFormState = EnumFormState.VIEW;
                     changeState(enumFormState,c);
-                  //  listView.getItems().add(c);
                     listView.getItems().add(0,c);
                     listView.getSelectionModel().select(c);
 
@@ -500,14 +518,27 @@ public class FormRecord {
         });
 
         btnCancel.setOnAction(e->{
-            enumFormState = EnumFormState.VIEW;
-            changeState(enumFormState,listView.getSelectionModel().getSelectedItem());
+
+            if(listView.getItems().isEmpty()){
+                enumFormState = EnumFormState.ADD;
+                window.close();
+            }else{
+                enumFormState = EnumFormState.VIEW;
+                changeState(enumFormState,listView.getSelectionModel().getSelectedItem());
+            }
+
+
         });
 
         loadDB(conn);
+
         listView.getSelectionModel().selectedItemProperty().addListener((observable,oldVal,newVal) ->{
             load_form(newVal);
+
         } );
+
+
+
         btnNew.setPrefWidth(listView.getWidth()/3-3);
         btnEdit.setPrefWidth(listView.getWidth()/3-3);
         btnDelete.setPrefWidth(listView.getWidth()/3-3);
@@ -530,7 +561,7 @@ public class FormRecord {
         gridPane.setPadding(new Insets(5));
 
         window = new Stage();
-        window.setTitle("Grid Pane");
+        window.setTitle("Records");
 
         scene = new Scene(gridPane);
         //scene.getStylesheets().add(getClass().getResource("formRecordStyle.css").toExternalForm());
@@ -590,23 +621,26 @@ public class FormRecord {
                txtFounderStreetAddress.setEditable(true);
 
 
-               Integer intLast=null;
+               Integer intLast = null;
 
-               try{
+               try {
                    Statement idStm = connection.createStatement();
-                   ResultSet resultSet = idStm.executeQuery("SELECT * FROM records ORDER BY record_datetime DESC");
-                   if(resultSet.next()){
-                        intLast = resultSet.getInt(1);
+                   ResultSet resultSet = idStm.executeQuery("SELECT last_value FROM records_id_seq");
+                   if (resultSet.next()) {
+                       intLast = resultSet.getInt(1);
                    }
-               }catch (SQLException sqlException){
+               } catch (SQLException sqlException) {
                    new MessageBoxOk(sqlException.getMessage());
-                   logger.log(Level.SEVERE,"SQL Exception ",sqlException);
+                   logger.log(Level.SEVERE, "SQL Exception", sqlException);
+               }
 
+               if (intLast == null) {
+                   logger.log(Level.SEVERE,"Couldn't take the last id from records table ");
                }
 
 
 
-               txtId.setText(String.valueOf((intLast!=null?intLast+1:1)));
+               txtId.setText(String.valueOf((intLast+1)));
                txtOfficerId.setText(String.valueOf(currUser.getAm()));
 
                LocalDate currentDate = LocalDate.now();
@@ -702,10 +736,10 @@ public class FormRecord {
             stm = conn.createStatement();
             switch (currUser.getRole()){
                 case "user":
-                    limit=" LIMIT 15000";
+                    limit=" LIMIT 5000";
                     break;
                 case "admin":
-                    limit=" LIMIT 500000";
+                    limit=" LIMIT 1500000";
                     break;
                 default:
                     limit="";
