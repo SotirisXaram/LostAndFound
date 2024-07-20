@@ -120,11 +120,10 @@ public class Main extends Application{
 
 
         scene = new Scene(vbox);
-        //scene.getStylesheets().add(getClass().getResource("main/java/com/charamidis/style.css").toExternalForm());
         try{
             scene.getStylesheets().add(getClass().getClassLoader().getResource("styles/style.css").toExternalForm());
         }catch (NullPointerException e){
-            System.out.println("im here");
+           logger.log(Level.FINE,"Couldnt load the css file in main",e);
         }
 
         loginPage = new Stage();
