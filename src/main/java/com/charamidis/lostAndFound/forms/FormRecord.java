@@ -526,7 +526,7 @@ public class FormRecord {
                     changeState(enumFormState,c);
                     listView.getItems().clear();
                     loadDB(conn);
-                    listView.getSelectionModel().select(c);
+                    listView.getSelectionModel().select(0);
 
                     }
    
