@@ -325,6 +325,8 @@ public class FormRecord {
 
         btnReturn.setOnAction(e->{
 
+          if(listView.getItems().isEmpty()) return;
+
           int itemId = listView.getSelectionModel().getSelectedItem().getId();
 
           try{

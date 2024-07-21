@@ -165,9 +165,14 @@ public class MainScreen {
 
         Menu utils = new Menu("Εργαλεία");
         MenuItem resetId = new MenuItem("Reset ID");
-        utils.getItems().add(resetId);
+        MenuItem deleteReturn = new MenuItem("Διαγραφή Επιστροφής");
+
+        utils.getItems().addAll(resetId,deleteReturn);
         resetId.setOnAction(e->{
            new ResetId(finalConn);
+        });
+        deleteReturn.setOnAction(e->{
+            new DeleteReturn(finalConn);
         });
 
 

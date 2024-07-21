@@ -104,7 +104,7 @@ public class PrintReport {
             bodyRun.addBreak();
             bodyRun.setText("και        μου     παρέδωσε      το/α     κατωτέρω     περιγραφόμενα   αντικείμενα  τα");
             bodyRun.addBreak();
-            bodyRun.setText("οποία και τα οποία ανευρέθησαν την "+LocalDate.parse(record.getFound_date().toString()).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))+" και ώρα "+LocalTime.parse(record.getRecord_time()).withNano(0).withSecond(0));
+            bodyRun.setText("οποία και τα οποία ανευρέθησαν την "+LocalDate.parse(record.getFound_date().toString()).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))+" και ώρα "+LocalTime.parse(record.getFound_time().toString()).withNano(0).withSecond(0));
             bodyRun.addBreak();
             bodyRun.setText("στ(5) "+record.getFound_location()+".......................................................................................................");
             bodyRun.addBreak();

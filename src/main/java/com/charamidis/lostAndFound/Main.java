@@ -101,8 +101,6 @@ public class Main extends Application{
                         logger.log(Level.SEVERE,"SQL Exception",exception);
                     }
 
-
-
             }
         });
 
