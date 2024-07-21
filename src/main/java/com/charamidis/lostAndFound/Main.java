@@ -76,10 +76,9 @@ public class Main extends Application{
                         PreparedStatement stm = conn.prepareStatement("SELECT * FROM users WHERE am=?");
                         stm.setInt(1, Integer.parseInt(txtUsername.getText().trim()));
                         ResultSet resultSet = stm.executeQuery();
-//BCrypt.checkpw(txtPassword.getText().trim(), hashedPassword)
                        if(resultSet.next()) {
                            String hashedPassword = resultSet.getString("password");
-                           if (true) {
+                           if (BCrypt.checkpw(txtPassword.getText().trim(), hashedPassword)) {
                                User user = new User(resultSet.getInt("am"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("date_of_birth"), LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")), resultSet.getString("role"));
                                MainScreen mainScreen = new MainScreen(connection, user, mainPage);
                                Scene mainScene = mainScreen.getScene();
