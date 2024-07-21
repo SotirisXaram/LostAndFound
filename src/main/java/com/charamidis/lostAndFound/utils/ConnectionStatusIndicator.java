@@ -8,31 +8,24 @@ import javafx.scene.shape.Circle;
 
 public class ConnectionStatusIndicator extends Region {
     private Circle circle;
-    private Label label;
 
     public ConnectionStatusIndicator() {
         circle = new Circle(8);
         circle.setFill(Color.RED);
 
-        label = new Label("Connection");
-        label.setAlignment(Pos.CENTER);
-
-        getChildren().addAll(circle, label);
+        getChildren().addAll(circle);
     }
 
     public void setStatus(Status status) {
         switch (status) {
             case ONLINE:
                 circle.setFill(Color.GREEN);
-                label.setText("Online");
                 break;
             case PENDING:
                 circle.setFill(Color.YELLOW);
-                label.setText("Pending");
                 break;
             case OFFLINE:
                 circle.setFill(Color.RED);
-                label.setText("Offline");
                 break;
         }
     }

@@ -3,6 +3,7 @@ package com.charamidis.lostAndFound;
 import com.charamidis.lostAndFound.models.User;
 import com.charamidis.lostAndFound.pages.MainScreen;
 import com.charamidis.lostAndFound.utils.AppLogger;
+import com.charamidis.lostAndFound.utils.ConnectionStatusIndicator;
 import com.charamidis.lostAndFound.utils.MessageBoxOk;
 import com.charamidis.lostAndFound.utils.Resources;
 import javafx.application.*;
@@ -16,8 +17,6 @@ import javafx.scene.control.*;
 import javafx.geometry.*;
 import org.mindrot.jbcrypt.*;
 
-import java.io.File;
-import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -37,12 +36,12 @@ public class Main extends Application{
     Button btnEnter ;
     HBox hboxUsername,hboxPassword;
     Connection connection;
+    StackPane stackPane;
     private static final Logger logger = AppLogger.getLogger();
+    ConnectionStatusIndicator connectionStatusIndicator;
 
     @Override
     public void start(Stage mainPage) {
-
-
 
 
         //Username field
@@ -115,12 +114,11 @@ public class Main extends Application{
         vbox.setAlignment(Pos.CENTER);
 
 
-
         scene = new Scene(vbox);
         try{
             scene.getStylesheets().add(getClass().getClassLoader().getResource("styles/style.css").toExternalForm());
         }catch (NullPointerException e){
-           logger.log(Level.FINE,"Couldnt load the css file in main",e);
+           logger.log(Level.FINE,"Couldn't load the css file in main",e);
         }
 
         loginPage = new Stage();
