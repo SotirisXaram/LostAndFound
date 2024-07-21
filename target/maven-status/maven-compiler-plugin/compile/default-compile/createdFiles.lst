@@ -13,6 +13,7 @@ com/charamidis/lostAndFound/exporters/ExcelExporter.class
 com/charamidis/lostAndFound/forms/SearchRecordsShow.class
 com/charamidis/lostAndFound/forms/ResetId.class
 com/charamidis/lostAndFound/states/EnumFormState.class
+com/charamidis/lostAndFound/forms/DeleteReturn.class
 com/charamidis/lostAndFound/utils/Resources.class
 com/charamidis/lostAndFound/pages/ItemsPerOfficers.class
 com/charamidis/lostAndFound/pages/ItemsOfMonth.class
