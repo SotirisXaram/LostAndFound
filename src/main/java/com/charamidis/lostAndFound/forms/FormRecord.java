@@ -415,6 +415,7 @@ public class FormRecord {
                     c.setItem_description(txtItemDescription.getText());
 
                     try {
+                        // SQL UPDATE query
                         String updateQuery = "UPDATE records SET " +
                                 "founder_last_name = ?,"+
                                 "founder_first_name = ?,"+
@@ -430,8 +431,11 @@ public class FormRecord {
                                 "found_date = ?, " +
                                 "found_time = ? "+
                                 "WHERE id = ?";
+
+                        // Prepare the statement
                         PreparedStatement updateStmt = connection.prepareStatement(updateQuery);
 
+                        // Bind the parameters (using SQLite-compatible formats)
                         updateStmt.setString(1, txtFounderLastName.getText().trim());
                         updateStmt.setString(2, txtFounderFirstName.getText().trim());
                         updateStmt.setString(3, txtFoundLocation.getText().trim());
@@ -440,29 +444,39 @@ public class FormRecord {
                         updateStmt.setString(6, txtFounderStreetAddress.getText().trim());
                         updateStmt.setString(7, txtFounderStreetNumber.getText().trim());
                         updateStmt.setString(8, txtFounderIdNumber.getText().trim());
-                        updateStmt.setObject(9, Integer.parseInt(txtOfficerId.getText()));
+                        updateStmt.setInt(9, Integer.parseInt(txtOfficerId.getText()));  // Use setInt() for integers
                         updateStmt.setString(10, txtFounderTelephone.getText().trim());
                         updateStmt.setString(11, txtItemDescription.getText().trim());
-                        updateStmt.setDate(12,Date.valueOf(txtFoundDate.getText().trim()));
-                        updateStmt.setTime(13, Time.valueOf(txtFoundTime.getText().trim()+":00"));
-                        updateStmt.setLong(14, Integer.parseInt(txtId.getText()));
 
-                        updateStmt.executeUpdate();
+                        // For dates and times, store them as TEXT in SQLite format (YYYY-MM-DD and HH:MM:SS)
+                        updateStmt.setString(12, txtFoundDate.getText().trim());  // Date as string in format "YYYY-MM-DD"
+                        updateStmt.setString(13, txtFoundTime.getText().trim() + ":00");  // Time as string in format "HH:MM:SS"
 
+                        // Bind the ID as the last parameter
+                        updateStmt.setInt(14, Integer.parseInt(txtId.getText()));
 
+                        // Execute the update
+                        int rowsAffected = updateStmt.executeUpdate();
+
+                        if (rowsAffected > 0) {
+                            System.out.println("Record updated successfully.");
+                        } else {
+                            System.out.println("No matching record found.");
+                        }
+
+                        // Close the statement
                         updateStmt.close();
-
 
                     } catch (SQLException ex) {
                         new MessageBoxOk(ex.getMessage());
-                        logger.log(Level.FINE,"Error with form record with sql ",ex);
+                        logger.log(Level.FINE, "Error with form record with SQL", ex);
 
-                    } finally{
+                    } finally {
                         enumFormState = EnumFormState.VIEW;
-                        changeState(enumFormState,c);
-
+                        changeState(enumFormState, c);
                     }
-                    
+
+
                 }
                 else if(enumFormState==EnumFormState.ADD){
                     Record c = new Record();
@@ -480,8 +494,8 @@ public class FormRecord {
                     c.setOfficer_id(Integer.valueOf(txtOfficerId.getText()));
                     c.setFounder_telephone(txtFounderTelephone.getText().equals("")?null: txtFounderTelephone.getText());
                     c.setItem_description(txtItemDescription.getText());
-
                     try {
+                        // SQL INSERT query
                         String insertQuery = "INSERT INTO records (" +
                                 "found_date, " +
                                 "found_time, " +
@@ -496,12 +510,14 @@ public class FormRecord {
                                 "officer_id, " +
                                 "founder_telephone, " +
                                 "item_description" +
-
                                 ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+                        // Prepare the statement
                         PreparedStatement insertStm = conn.prepareStatement(insertQuery);
 
-                        insertStm.setDate(1, c.getFound_date());
-                        insertStm.setTime(2, c.getFound_time());
+                        // Bind the parameters (adjusting for SQLite)
+                        insertStm.setString(1, c.getFound_date().toString());  // Store date as TEXT in format "YYYY-MM-DD"
+                        insertStm.setString(2, c.getFound_time().toString());  // Store time as TEXT in format "HH:MM:SS"
                         insertStm.setString(3, c.getFound_location());
                         insertStm.setObject(4, c.getFounder_area_inhabitant() != null ? c.getFounder_area_inhabitant() : null);
                         insertStm.setObject(5, c.getFounder_father_name() != null ? c.getFounder_father_name() : null);
@@ -514,23 +530,24 @@ public class FormRecord {
                         insertStm.setObject(12, c.getFounder_telephone() != null ? c.getFounder_telephone() : null);
                         insertStm.setObject(13, c.getItem_description() != null ? c.getItem_description() : null);
 
-
+                        // Execute the insert query
                         insertStm.executeUpdate();
-                        insertStm.close();
 
+                        // Close the statement
+                        insertStm.close();
 
                     } catch (SQLException throwables) {
                         new MessageBoxOk(throwables.getMessage());
-                        logger.log(Level.SEVERE,"SQL Exception ",throwables);
+                        logger.log(Level.SEVERE, "SQL Exception", throwables);
 
-                    }finally{
-                    enumFormState = EnumFormState.VIEW;
-                    changeState(enumFormState,c);
-                    listView.getItems().clear();
-                    loadDB(conn);
-                    listView.getSelectionModel().select(0);
-
+                    } finally {
+                        enumFormState = EnumFormState.VIEW;
+                        changeState(enumFormState, c);
+                        listView.getItems().clear();
+                        loadDB(conn);
+                        listView.getSelectionModel().select(0);
                     }
+
    
                 }   
             }
@@ -642,20 +659,33 @@ public class FormRecord {
 
                Integer intLast = null;
 
+
                try {
+                   // Query to get the last inserted row ID
                    Statement idStm = connection.createStatement();
-                   ResultSet resultSet = idStm.executeQuery("SELECT last_value FROM records_id_seq");
+                   ResultSet resultSet = idStm.executeQuery("SELECT last_insert_rowid()");
+
+                   // If there's a result, set the last inserted ID
                    if (resultSet.next()) {
                        intLast = resultSet.getInt(1);
                    }
+
+                   // Close the result set and statement
+                   resultSet.close();
+                   idStm.close();
+
                } catch (SQLException sqlException) {
                    new MessageBoxOk(sqlException.getMessage());
                    logger.log(Level.SEVERE, "SQL Exception", sqlException);
                }
 
+// Handle the case where the last ID couldn't be retrieved
                if (intLast == null) {
-                   logger.log(Level.SEVERE,"Couldn't take the last id from records table ");
+                   logger.log(Level.SEVERE, "Couldn't retrieve the last inserted ID from records table.");
+               } else {
+                   logger.log(Level.INFO, "The last inserted ID is: " + intLast);
                }
+
 
 
 
@@ -748,54 +778,64 @@ public class FormRecord {
 
 
 
-    public void loadDB(Connection conn){
+    public void loadDB(Connection conn) {
         Statement stm = null;
-        String limit ;
-        try{
+        String limit;
+        try {
             stm = conn.createStatement();
-            switch (currUser.getRole()){
+
+            // Set limit based on user role
+            switch (currUser.getRole()) {
                 case "user":
-                    limit=" LIMIT 5000";
+                    limit = " LIMIT 5000";
                     break;
                 case "admin":
-                    limit=" LIMIT 1500000";
+                    limit = " LIMIT 1500000"; // SQLite has no hard limit on max rows, but consider performance
                     break;
                 default:
-                    limit="";
+                    limit = "";
             }
-            String query = "SELECT * FROM records ORDER BY id DESC"+limit;
+
+            // Build the query with appropriate limit
+            String query = "SELECT * FROM records ORDER BY id DESC" + limit;
             ResultSet resultSet = stm.executeQuery(query);
-            while(resultSet.next()){
-               Record record = new Record(
-                       resultSet.getInt("id"),
-                       resultSet.getTimestamp("record_datetime").toLocalDateTime().toLocalDate().toString(),
-                       resultSet.getTimestamp("record_datetime").toLocalDateTime().toLocalTime().withSecond(0).toString(),
-                       resultSet.getInt("officer_id"),
-                       resultSet.getString("founder_last_name"),
-                       resultSet.getString("founder_first_name"),
-                       resultSet.getString("founder_id_number"),
-                       resultSet.getString("founder_telephone"),
-                       resultSet.getString("founder_street_address"),
-                       resultSet.getString("founder_street_number"),
-                       resultSet.getString("founder_father_name"),
-                       resultSet.getString("founder_area_inhabitant"),
-                       resultSet.getDate("found_date"),
-                       resultSet.getTime("found_time"),
-                       resultSet.getString("found_location"),
-                       resultSet.getString("item_description")
 
-               );
+            // Process the result set
+            while (resultSet.next()) {
+                Record record = new Record(
+                        resultSet.getInt("id"),
+                        resultSet.getTimestamp("record_datetime").toLocalDateTime().toLocalDate().toString(),
+                        resultSet.getTimestamp("record_datetime").toLocalDateTime().toLocalTime().withSecond(0).toString(),
+                        resultSet.getInt("officer_id"),
+                        resultSet.getString("founder_last_name"),
+                        resultSet.getString("founder_first_name"),
+                        resultSet.getString("founder_id_number"),
+                        resultSet.getString("founder_telephone"),
+                        resultSet.getString("founder_street_address"),
+                        resultSet.getString("founder_street_number"),
+                        resultSet.getString("founder_father_name"),
+                        resultSet.getString("founder_area_inhabitant"),
+                        resultSet.getDate("found_date"),
+                        resultSet.getTime("found_time"),
+                        resultSet.getString("found_location"),
+                        resultSet.getString("item_description")
+                );
 
-               listView.getItems().add(record);
-
-
+                listView.getItems().add(record);
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             new MessageBoxOk(e.getMessage());
-            logger.log(Level.SEVERE,"SQL Exception ",e);
-
+            logger.log(Level.SEVERE, "SQL Exception ", e);
+        } finally {
+            // Ensure resources are cleaned up
+            try {
+                if (stm != null) {
+                    stm.close();
+                }
+            } catch (SQLException e) {
+                logger.log(Level.SEVERE, "Failed to close statement", e);
+            }
         }
-
     }
 
     private void generatedBarcode(String data){
