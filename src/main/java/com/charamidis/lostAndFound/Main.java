@@ -42,8 +42,11 @@ public class Main extends Application{
 
     @Override
     public void start(Stage mainPage) {
-
-
+        
+        //UserName and Password for testing DB (Postgresql config) (Use .env )
+        private String testUserNameDb = "sotirisxaram" ;
+        private String testPasswordDb = "1234" ;
+        
         //Username field
         lblUserName = new Label("Χρήστης:");
         txtUsername = new TextField();
@@ -70,7 +73,7 @@ public class Main extends Application{
 
             if(validateForm()){
                     try{
-                        Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/lostandfound", "sotirisxaram", "1234" );
+                        Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/lostandfound", testUserNameDb, testPasswordDb );
                         connection = conn;
                         PreparedStatement stm = conn.prepareStatement("SELECT * FROM users WHERE am=?");
                         stm.setInt(1, Integer.parseInt(txtUsername.getText().trim()));
