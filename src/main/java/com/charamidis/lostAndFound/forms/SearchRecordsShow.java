@@ -114,6 +114,7 @@ public class SearchRecordsShow {
             ResultSet resultSet = stm.executeQuery("SELECT * FROM records ORDER BY id");
             while (resultSet.next()) {
                 Record record = new Record(
+                        resultSet.getString("uuid"),
                         resultSet.getInt("id"),
                         resultSet.getTimestamp("record_datetime").toLocalDateTime().toLocalDate().toString(),
                         resultSet.getTimestamp("record_datetime").toLocalDateTime().toLocalTime().withSecond(0).toString(),
@@ -126,8 +127,8 @@ public class SearchRecordsShow {
                         resultSet.getString("founder_street_number"),
                         resultSet.getString("founder_father_name"),
                         resultSet.getString("founder_area_inhabitant"),
-                        resultSet.getDate("found_date"),
-                        resultSet.getTime("found_time"),
+                        resultSet.getString("found_date"),
+                        resultSet.getString("found_time"),
                         resultSet.getString("found_location"),
                         resultSet.getString("item_description")
 

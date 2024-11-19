@@ -36,9 +36,8 @@ public class Main extends Application{
     Button btnEnter ;
     HBox hboxUsername,hboxPassword;
     Connection connection;
-    StackPane stackPane;
     private static final Logger logger = AppLogger.getLogger();
-    ConnectionStatusIndicator connectionStatusIndicator;
+
 
     @Override
     public void start(Stage mainPage) {
@@ -49,6 +48,7 @@ public class Main extends Application{
         txtUsername = new TextField();
         txtUsername.setPromptText("Αριθμός μητρώου...");
         txtUsername.setFont(Font.font("Arial", FontWeight.BLACK,12));
+        txtUsername.setTooltip(new Tooltip("Εισάγετε τον αριθμό μητρώου σας."));
         hboxUsername = new HBox();
         hboxUsername.getChildren().addAll(lblUserName,txtUsername);
         hboxUsername.setAlignment(Pos.CENTER);
@@ -60,6 +60,7 @@ public class Main extends Application{
         txtPassword = new PasswordField();
         txtPassword.setPromptText("Κωδικός...");
         txtPassword.setFont(Font.font("Arial", FontWeight.LIGHT,12));
+        txtPassword.setTooltip(new Tooltip("Εισάγετε τον κωδικό πρόσβασής σας."));
         hboxPassword = new HBox();
         hboxPassword.getChildren().addAll(lblPassword,txtPassword);
         hboxPassword.setAlignment(Pos.CENTER);
@@ -70,7 +71,7 @@ public class Main extends Application{
 
             if(validateForm()){
                     try{
-                     //   Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/lostandfound", "sotirisxaram", "1234" );
+
                         Connection conn = DriverManager.getConnection("jdbc:sqlite:lostandfound.db");
                         connection = conn;
                         PreparedStatement stm = conn.prepareStatement("SELECT * FROM users WHERE am=?");
@@ -85,14 +86,14 @@ public class Main extends Application{
                                loginPage.setTitle("Lost And Found");
                                loginPage.setScene(mainScene);
                            } else {
-                               new MessageBoxOk("Λάθος ΟΝΟΜΑ ή ΚΩΔΙΚΟΣ\n");
+                               new MessageBoxOk("Τα στοιχεία σας είναι λανθασμένα.\n");
 
                            }
 
 
                            resultSet.close();
                        }else{
-                           new MessageBoxOk("Λάθος ΟΝΟΜΑ ή ΚΩΔΙΚΟΣ\n");
+                           new MessageBoxOk("Τα στοιχεία σας είναι λανθασμένα.\n");
 
                        }
 

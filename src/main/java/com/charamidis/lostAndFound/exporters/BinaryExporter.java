@@ -52,6 +52,7 @@ public class BinaryExporter {
                         LocalTime recordTime = dateTime.toLocalTime();
 
                         Record record = new Record(
+                                rs.getString("uuid"),
                                 rs.getInt("id"),
                                 recordDate.toString(),
                                 recordTime.toString(),
@@ -64,8 +65,8 @@ public class BinaryExporter {
                                 rs.getString("founder_street_number"),
                                 rs.getString("founder_father_name"),
                                 rs.getString("founder_area_inhabitant"),
-                                rs.getDate("found_date"),
-                                rs.getTime("found_time"),
+                                rs.getString("found_date"),
+                                rs.getString("found_time"),
                                 rs.getString("found_location"),
                                 rs.getString("item_description")
                         );

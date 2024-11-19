@@ -27,6 +27,8 @@ import javafx.scene.layout.*;
 import javafx.scene.control.*;
 import javafx.geometry.*;
 
+import java.util.UUID;
+
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +40,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -408,8 +409,8 @@ public class FormRecord {
                     c.setFounder_street_address(txtFounderStreetAddress.equals("")?null:(txtFounderStreetAddress.getText()));
                     c.setFounder_street_number(txtFounderStreetNumber.equals("")?null:(txtFounderStreetNumber.getText()));
                     c.setFounder_id_number(txtFounderIdNumber.getText());
-                    c.setFound_date(Date.valueOf(txtFoundDate.getText()));
-                    c.setFound_time(Time.valueOf(txtFoundTime.getText()+":00"));
+                    c.setFound_date(Date.valueOf(txtFoundDate.getText()).toString());
+                    c.setFound_time(Time.valueOf(txtFoundTime.getText()+":00").toString());
                     c.setOfficer_id(Integer.valueOf(txtOfficerId.getText()));
                     c.setFounder_telephone(txtFounderTelephone.getText().equals("")?null: txtFounderTelephone.getText());
                     c.setItem_description(txtItemDescription.getText());
@@ -479,9 +480,10 @@ public class FormRecord {
 
                 }
                 else if(enumFormState==EnumFormState.ADD){
+                    UUID uuid = UUID.randomUUID();
                     Record c = new Record();
                     c.setId(Integer.valueOf(txtId.getText()));
-                    c.setFound_date(Date.valueOf(txtFoundDate.getText()));
+                    c.setFound_date(Date.valueOf(txtFoundDate.getText()).toString());
                     c.setFound_location(txtFoundLocation.getText());
                     c.setFounder_last_name(txtFounderLastName.getText());
                     c.setFounder_first_name(txtFounderFirstName.getText());
@@ -490,12 +492,13 @@ public class FormRecord {
                     c.setFounder_street_address(txtFounderStreetAddress.equals("")?null:(txtFounderStreetAddress.getText()));
                     c.setFounder_street_number(txtFounderStreetNumber.equals("")?null:(txtFounderStreetNumber.getText()));
                     c.setFounder_id_number(txtFounderIdNumber.getText());
-                    c.setFound_time(Time.valueOf(txtFoundTime.getText()+":00"));
+                    c.setFound_time(Time.valueOf(txtFoundTime.getText()+":00").toString());
                     c.setOfficer_id(Integer.valueOf(txtOfficerId.getText()));
                     c.setFounder_telephone(txtFounderTelephone.getText().equals("")?null: txtFounderTelephone.getText());
                     c.setItem_description(txtItemDescription.getText());
+                    c.setUuid(uuid.toString());
                     try {
-                        // SQL INSERT query
+
                         String insertQuery = "INSERT INTO records (" +
                                 "found_date, " +
                                 "found_time, " +
@@ -509,10 +512,11 @@ public class FormRecord {
                                 "founder_id_number, " +
                                 "officer_id, " +
                                 "founder_telephone, " +
-                                "item_description" +
-                                ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                                "item_description," +
+                                "uuid"+
+                                ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
 
-                        // Prepare the statement
+
                         PreparedStatement insertStm = conn.prepareStatement(insertQuery);
 
                         // Bind the parameters (adjusting for SQLite)
@@ -529,8 +533,9 @@ public class FormRecord {
                         insertStm.setInt(11, c.getOfficer_id());
                         insertStm.setObject(12, c.getFounder_telephone() != null ? c.getFounder_telephone() : null);
                         insertStm.setObject(13, c.getItem_description() != null ? c.getItem_description() : null);
+                        insertStm.setString(14,c.getUuid());
 
-                        // Execute the insert query
+
                         insertStm.executeUpdate();
 
                         // Close the statement
@@ -600,7 +605,7 @@ public class FormRecord {
         window.setTitle("Records");
 
         scene = new Scene(gridPane);
-        //scene.getStylesheets().add(getClass().getResource("formRecordStyle.css").toExternalForm());
+
 
         scene.heightProperty().addListener((observable,oldValue,newValue)->{
             gridPane.setPrefHeight(scene.getHeight());
@@ -802,10 +807,16 @@ public class FormRecord {
 
             // Process the result set
             while (resultSet.next()) {
+
+                LocalDateTime recordDateTime = resultSet.getTimestamp("record_datetime").toLocalDateTime();
+                String recordDate = recordDateTime.toLocalDate().toString();
+                String recordTime = recordDateTime.toLocalTime().withSecond(0).toString();
+
                 Record record = new Record(
+                        resultSet.getString("uuid"),
                         resultSet.getInt("id"),
-                        resultSet.getTimestamp("record_datetime").toLocalDateTime().toLocalDate().toString(),
-                        resultSet.getTimestamp("record_datetime").toLocalDateTime().toLocalTime().withSecond(0).toString(),
+                        recordDate,
+                        recordTime,
                         resultSet.getInt("officer_id"),
                         resultSet.getString("founder_last_name"),
                         resultSet.getString("founder_first_name"),
@@ -815,8 +826,8 @@ public class FormRecord {
                         resultSet.getString("founder_street_number"),
                         resultSet.getString("founder_father_name"),
                         resultSet.getString("founder_area_inhabitant"),
-                        resultSet.getDate("found_date"),
-                        resultSet.getTime("found_time"),
+                        resultSet.getString("found_date"),
+                        resultSet.getString("found_time"),
                         resultSet.getString("found_location"),
                         resultSet.getString("item_description")
                 );
@@ -881,10 +892,10 @@ public class FormRecord {
             txtFounderStreetNumber.setText(c.getFounder_street_number()==null?"":c.getFounder_street_number());
             txtFounderFatherName.setText(c.getFounder_father_name()==null?"":c.getFounder_father_name());
             txtFounderAreaInhabitant.setText(c.getFounder_area_inhabitant()==null?"":c.getFounder_area_inhabitant());
-            txtFoundDate.setText(c.getFound_date().toString());
+            txtFoundDate.setText(c.getFound_date());
             txtFoundLocation.setText(c.getFound_location());
             txtItemDescription.setText(c.getItem_description());
-            txtFoundTime.setText(simpleDateFormat.format(c.getFound_time()));
+            txtFoundTime.setText(c.getFound_time());
 
         }
 

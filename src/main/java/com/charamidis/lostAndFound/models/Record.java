@@ -1,8 +1,7 @@
 package com.charamidis.lostAndFound.models;
 
 import java.io.Serializable;
-import java.sql.Date;
-import java.sql.Time;
+
 
 public class Record implements Serializable {
    private Integer id ;
@@ -16,17 +15,19 @@ public class Record implements Serializable {
    private String founder_street_number;
    private String founder_father_name;
    private String founder_area_inhabitant;
-   private Date found_date;
+   private String found_date;
    private String found_location;
    private String item_description;
-   private Time found_time;
+   private String found_time;
    private String record_time;
+   private String uuid;
 
     public Record(){
 
     }
 
-    public Record(Integer id, String record_date,String record_time, Integer officer_id, String founder_last_name, String founder_first_name, String founder_id_number, String founder_telephone, String founder_street_address, String founder_street_number, String founder_father_name, String founder_area_inhabitant, Date found_date,Time found_time, String found_location, String item_description) {
+    public Record(String uuid,Integer id, String record_date,String record_time, Integer officer_id, String founder_last_name, String founder_first_name, String founder_id_number, String founder_telephone, String founder_street_address, String founder_street_number, String founder_father_name, String founder_area_inhabitant, String found_date,String found_time, String found_location, String item_description) {
+        this.uuid = uuid;
         this.id = id;
         this.record_date=record_date;
         this.record_time=record_time;
@@ -47,6 +48,14 @@ public class Record implements Serializable {
 
     public Integer getId() {
         return id;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public void setId(Integer id) {
@@ -133,11 +142,11 @@ public class Record implements Serializable {
         this.founder_area_inhabitant = founder_area_inhabitant;
     }
 
-    public Date getFound_date() {
+    public String getFound_date() {
         return found_date;
     }
 
-    public void setFound_date(Date found_date) {
+    public void setFound_date(String found_date) {
         this.found_date = found_date;
     }
 
@@ -157,11 +166,11 @@ public class Record implements Serializable {
         this.item_description = item_description;
     }
 
-    public Time getFound_time() {
+    public String getFound_time() {
         return found_time;
     }
 
-    public void setFound_time(Time found_time) {
+    public void setFound_time(String found_time) {
         this.found_time = found_time;
     }
 
