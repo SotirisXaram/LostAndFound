@@ -83,7 +83,7 @@ public class AddUser {
                     stm.setInt(1,Integer.parseInt(txtAm.getText()));
                     stm.setString(2,txtFirstName.getText());
                     stm.setString(3,txtLastName.getText());
-                    stm.setDate(4,java.sql.Date.valueOf(datePicker.getValue().toString()));
+                    stm.setString(4, String.valueOf(Date.valueOf(datePicker.getValue().toString())));
                     stm.setString(5,comboBox.getValue());
                     stm.setString(6,hashedPassword);
                     stm.executeUpdate();

@@ -18,7 +18,6 @@ public class ShowUsers {
     Scene scene ;
     Stage stage;
     TableView<User> tv ;
-    VBox vbox;
     Connection connection;
     public ShowUsers(Connection conn){
 

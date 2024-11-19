@@ -108,8 +108,8 @@ public class MainScreen {
         Menu diagrams = new Menu("_Στατιστικά");
         MenuItem itemsLastYear = new MenuItem("Εγγραφές Τελευταίου Χρόνου");
         MenuItem returnsLastYear = new MenuItem("Επιστροφές Τελευταίου Χρόνου");
-//        MenuItem itemsOfMonth = new MenuItem("Μηνιαία Στατιστικά");
-        MenuItem itemsPerOfficers = new MenuItem("Στατιστικά χρηστών");
+
+
 
         itemsLastYear.setOnAction(e->{
             new ItemsLastYear(finalConn);
@@ -119,16 +119,10 @@ public class MainScreen {
             new ReturnsLastYear(finalConn);
         });
 
-//        itemsOfMonth.setOnAction(e->{
-//            new ItemsOfMonth(finalConn);
-//        });
-
-        itemsPerOfficers.setOnAction(e->{
-            new ItemsPerOfficers(finalConn);
-        });
 
 
-        diagrams.getItems().addAll(itemsLastYear,returnsLastYear ,new SeparatorMenuItem(),itemsPerOfficers);
+
+        diagrams.getItems().addAll(itemsLastYear,new SeparatorMenuItem(),returnsLastYear);
 
         Menu exportData = new Menu("Εξαγωγή");
         MenuItem exportExcel = new MenuItem("Excel");

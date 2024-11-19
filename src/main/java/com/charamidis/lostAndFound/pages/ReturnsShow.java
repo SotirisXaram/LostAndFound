@@ -15,7 +15,6 @@ public class ReturnsShow {
     Scene scene;
     Stage stage;
     TableView<Return> tv;
-    VBox vbox;
     Connection connection;
 
     public ReturnsShow(Connection conn) {
@@ -75,9 +74,11 @@ public class ReturnsShow {
             stm = connection.createStatement();
             ResultSet resultSet = stm.executeQuery("SELECT * FROM returns ORDER BY id");
             while (resultSet.next()) {
-                Return ret = new Return(resultSet.getInt("id"), resultSet.getInt("return_officer"),
+                Return ret = new Return(
+                        resultSet.getString("uuid"),
+                        resultSet.getInt("id"), resultSet.getInt("return_officer"),
                         resultSet.getString("return_last_name"), resultSet.getString("return_first_name"),
-                        resultSet.getDate("return_date").toString(), resultSet.getObject("return_time")==null?"":resultSet.getString("return_time"),
+                        resultSet.getString("return_date"), resultSet.getObject("return_time")==null?"":resultSet.getString("return_time"),
                         resultSet.getString("return_telephone"), resultSet.getString("return_id_number"),
                         resultSet.getString("return_father_name"), resultSet.getObject("return_date_of_birth")==null?"":resultSet.getString("return_date_of_birth"),
                         resultSet.getString("return_street_address"), resultSet.getString("return_street_number"),resultSet.getTimestamp("return_timestamp").toString()

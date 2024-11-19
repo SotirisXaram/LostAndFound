@@ -27,7 +27,7 @@ public class EditUsers {
         TableColumn<User,Integer> columnAm = new TableColumn<>("ΑΡΙΘΜΟΣ ΜΗΤΡΩΟΥ");
         columnAm.setCellValueFactory(new PropertyValueFactory<>("am"));
         columnAm.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        columnAm.setOnEditCommit(event -> event.getRowValue().setAm(event.getNewValue()));
+//        columnAm.setOnEditCommit(event -> event.getRowValue().setAm(event.getNewValue()));
 
         TableColumn<User,String> columnFirstName = new TableColumn<>("ONOMA");
         columnFirstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
@@ -42,7 +42,17 @@ public class EditUsers {
         TableColumn<User,String> columnBday = new TableColumn<>("ΗΜΕΡΟΜΗΝΙΑ ΓΕΝΝΗΣΗΣ");
         columnBday.setCellValueFactory(new PropertyValueFactory<>("birthday"));
         columnBday.setCellFactory(TextFieldTableCell.forTableColumn());
-        columnBday.setOnEditCommit(event -> event.getRowValue().setBirthday(event.getNewValue()));
+        columnBday.setOnEditCommit(event -> {
+            try {
+                // Validate the new date format
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate.parse(event.getNewValue(), formatter);
+                event.getRowValue().setBirthday(event.getNewValue());
+            } catch (Exception e) {
+                new MessageBoxOk("Invalid date format. Use yyyy-MM-dd.");
+                tv.refresh(); // Revert to the old value
+            }
+        });
 
         TableColumn<User,String> columnDateLoggedIn = new TableColumn<>("ΗΜΕΡΟΜΗΝΙΑ ΕΙΣΟΔΟΥ");
         columnDateLoggedIn.setCellValueFactory(new PropertyValueFactory<>("dateLoggedIn"));
@@ -99,19 +109,17 @@ public class EditUsers {
     }
 
     public void updateUserInDatabase(User user) throws SQLException {
-        String updateSQL = "UPDATE users SET am = ?, first_name = ?, last_name = ?, date_of_birth = ?, role = ? WHERE am = ?";
+        String updateSQL = "UPDATE users SET first_name = ?, last_name = ?, date_of_birth = ?, role = ? WHERE am = ?";
         try (PreparedStatement stm = connection.prepareStatement(updateSQL)) {
-            stm.setInt(1,user.getAm());
-            stm.setString(2, user.getFirstName());
-            stm.setString(3, user.getLastName());
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate localDate = LocalDate.parse(user.getBirthday(), formatter);
-            java.sql.Date sqlDate = java.sql.Date.valueOf(localDate);
-            stm.setDate(4, sqlDate);
+            stm.setString(1, user.getFirstName());
+            stm.setString(2, user.getLastName());
 
-            stm.setString(5, user.getRole());
-            stm.setInt(6, user.getAm());
+
+            stm.setString(3, user.getBirthday());
+
+            stm.setString(4, user.getRole());
+            stm.setInt(5, user.getAm());
             stm.executeUpdate();
         }
     }

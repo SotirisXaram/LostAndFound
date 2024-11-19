@@ -1,6 +1,7 @@
 package com.charamidis.lostAndFound.models;
 
 public class Return {
+    private String uuid;
     private Integer id;
     private Integer returnOfficer;
     private String returnLastName;
@@ -16,6 +17,14 @@ public class Return {
     private String returnTimestamp;
     private String comment;
 
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
     public Return(){
 
     }
@@ -23,10 +32,11 @@ public class Return {
 
 
     // Constructor
-    public Return(Integer id, Integer returnOfficer, String returnLastName, String returnFirstName,
+    public Return(String uuid,Integer id, Integer returnOfficer, String returnLastName, String returnFirstName,
                   String returnDate, String returnTime, String returnTelephone, String returnIdNumber,
                   String returnFatherName, String returnDateOfBirth, String returnStreetAddress,
                   String returnStreetNumber,String returnTimestamp,String comment) {
+        this.uuid = uuid;
         this.id = id;
         this.returnOfficer = returnOfficer;
         this.returnLastName = returnLastName;

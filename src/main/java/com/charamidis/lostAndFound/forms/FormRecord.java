@@ -27,6 +27,7 @@ import javafx.scene.layout.*;
 import javafx.scene.control.*;
 import javafx.geometry.*;
 
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import java.awt.*;
@@ -51,8 +52,8 @@ public class FormRecord {
     Scene scene;
     ListView<Record> listView;
     Label lblId,lblDate,lblOfficerId,lblFoundTime,lblFounderLastName,lblFounderFirstName,lblFounderIdNumber,lblFounderTelephone,lblFounderStreetNumber,lblFounderStreetAddress,lblFounderFatherName,lblFounderAreaInhabitant,lblFoundDate,lblFoundLocation,lblItemDescription;
-    TextField txtId,txtOfficerId,txtFounderLastName,txtFoundTime,txtFounderFirstName,txtFounderIdNumber,txtFounderTelephone,txtFounderStreetAddress,txtFounderStreetNumber,txtFounderFatherName,txtFounderAreaInhabitant,txtFoundDate,txtFoundLocation,txtItemDescription;
-    DatePicker txtDate;
+    TextField txtId,txtOfficerId,txtFounderLastName,txtFoundTime,txtFounderFirstName,txtFounderIdNumber,txtFounderTelephone,txtFounderStreetAddress,txtFounderStreetNumber,txtFounderFatherName,txtFounderAreaInhabitant,txtFoundLocation,txtItemDescription;
+    DatePicker txtDate,txtFoundDate;
     GridPane gridPane ;
     Button btnNew,btnEdit,btnDelete,btnPrint,btnReturn ;
     EnumFormState enumFormState;
@@ -118,7 +119,7 @@ public class FormRecord {
         txtId = new TextField();
         txtOfficerId = new TextField();
         txtDate = new DatePicker();
-        txtFoundDate = new TextField();
+        txtFoundDate = new DatePicker();
         txtFounderAreaInhabitant = new TextField();
         txtFounderFatherName = new TextField();
         txtFounderFirstName = new TextField();
@@ -173,6 +174,7 @@ public class FormRecord {
 
         gridPane.add(lblFoundDate,1,12);
         gridPane.add(txtFoundDate,2,12);
+
 
         gridPane.add(lblItemDescription,1,13);
         gridPane.add(txtItemDescription,2,13);
@@ -409,7 +411,7 @@ public class FormRecord {
                     c.setFounder_street_address(txtFounderStreetAddress.equals("")?null:(txtFounderStreetAddress.getText()));
                     c.setFounder_street_number(txtFounderStreetNumber.equals("")?null:(txtFounderStreetNumber.getText()));
                     c.setFounder_id_number(txtFounderIdNumber.getText());
-                    c.setFound_date(Date.valueOf(txtFoundDate.getText()).toString());
+                    c.setFound_date(String.valueOf(Date.valueOf(txtFoundDate.getValue())));
                     c.setFound_time(Time.valueOf(txtFoundTime.getText()+":00").toString());
                     c.setOfficer_id(Integer.valueOf(txtOfficerId.getText()));
                     c.setFounder_telephone(txtFounderTelephone.getText().equals("")?null: txtFounderTelephone.getText());
@@ -445,12 +447,12 @@ public class FormRecord {
                         updateStmt.setString(6, txtFounderStreetAddress.getText().trim());
                         updateStmt.setString(7, txtFounderStreetNumber.getText().trim());
                         updateStmt.setString(8, txtFounderIdNumber.getText().trim());
-                        updateStmt.setInt(9, Integer.parseInt(txtOfficerId.getText()));  // Use setInt() for integers
+                        updateStmt.setInt(9, Integer.parseInt(txtOfficerId.getText()));
                         updateStmt.setString(10, txtFounderTelephone.getText().trim());
                         updateStmt.setString(11, txtItemDescription.getText().trim());
 
                         // For dates and times, store them as TEXT in SQLite format (YYYY-MM-DD and HH:MM:SS)
-                        updateStmt.setString(12, txtFoundDate.getText().trim());  // Date as string in format "YYYY-MM-DD"
+                        updateStmt.setString(12, String.valueOf(txtFoundDate.getValue()));  // Date as string in format "YYYY-MM-DD"
                         updateStmt.setString(13, txtFoundTime.getText().trim() + ":00");  // Time as string in format "HH:MM:SS"
 
                         // Bind the ID as the last parameter
@@ -483,7 +485,7 @@ public class FormRecord {
                     UUID uuid = UUID.randomUUID();
                     Record c = new Record();
                     c.setId(Integer.valueOf(txtId.getText()));
-                    c.setFound_date(Date.valueOf(txtFoundDate.getText()).toString());
+                    c.setFound_date(String.valueOf(Date.valueOf(txtFoundDate.getValue())));
                     c.setFound_location(txtFoundLocation.getText());
                     c.setFounder_last_name(txtFounderLastName.getText());
                     c.setFounder_first_name(txtFounderFirstName.getText());
@@ -700,7 +702,7 @@ public class FormRecord {
                LocalDate currentDate = LocalDate.now();
                txtDate.setValue(currentDate);
 
-               txtFoundDate.setText(currentDate.toString());
+               txtFoundDate.setValue(LocalDate.parse(currentDate.toString()));
                txtFoundTime.setText(LocalTime.now().withSecond(0).withNano(0).minusMinutes(30).toString());
                txtFounderAreaInhabitant.setText("");
                txtFounderFatherName.setText("");
@@ -892,10 +894,10 @@ public class FormRecord {
             txtFounderStreetNumber.setText(c.getFounder_street_number()==null?"":c.getFounder_street_number());
             txtFounderFatherName.setText(c.getFounder_father_name()==null?"":c.getFounder_father_name());
             txtFounderAreaInhabitant.setText(c.getFounder_area_inhabitant()==null?"":c.getFounder_area_inhabitant());
-            txtFoundDate.setText(c.getFound_date());
+            txtFoundDate.setValue(LocalDate.parse(c.getFound_date()));
             txtFoundLocation.setText(c.getFound_location());
             txtItemDescription.setText(c.getItem_description());
-            txtFoundTime.setText(c.getFound_time());
+            txtFoundTime.setText(c.getFound_time().substring(0,c.getFound_time().lastIndexOf(":00")));
 
         }
 
@@ -906,33 +908,33 @@ public class FormRecord {
        String errors = "";
 
         if (txtFounderLastName.getText().isEmpty()) {
-            errors += "Last Name must provide.\n";
+            errors += "Το επώνυμο πρέπει να συμπληρωθεί.\n";
         }
         if (txtFounderFirstName.getText().isEmpty()) {
-            errors += "First Name must provide.\n";
+            errors += "Το όνομα πρέπει να συμπληρωθεί.\n";
         }
         if (txtFounderIdNumber.getText().isEmpty()) {
-            errors += "Founder ID must provide.\n";
+            errors += "Ο αριθμός ταυτότητας του ιδρυτή πρέπει να συμπληρωθεί.\n";
         }
         if (txtFoundLocation.getText().isEmpty()) {
-            errors += "Found location must be provided.\n";
+            errors += "Η τοποθεσία εύρεσης πρέπει να συμπληρωθεί.\n";
         }
         if (txtItemDescription.getText().isEmpty()) {
-            errors += "Item description must be provided.\n";
+            errors += "Η περιγραφή του αντικειμένου πρέπει να συμπληρωθεί.\n";
         }
-        if (txtFoundDate.getText().isEmpty() || !txtFoundDate.getText().matches("^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$")) {
-            errors += "Found Date must be provided and be in yyyy-MM-dd format(2024-12-31).\n";
-        }
+//        if (txtFoundDate.getValue() || !txtFoundDate.getText().matches("^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$")) {
+//            errors += "Η ημερομηνία εύρεσης πρέπει να συμπληρωθεί και να είναι στη μορφή yyyy-MM-dd (π.χ. 2024-12-31).\n";
+//        }
 
         if (txtDate.getValue() == null ) {
-            errors += " date must be provided.\n";
+            errors += "Η ημερομηνία πρέπει να συμπληρωθεί.\n";
         }
 
         if (txtOfficerId.getText().isEmpty() || !txtOfficerId.getText().matches("\\d+")) {
-            errors += "Officer ID must be a number and must be provided.\n";
+            errors += "Το ID του αξιωματικού πρέπει να είναι αριθμός και να συμπληρωθεί.\n";
         }
         if (txtFoundTime.getText().isEmpty() || !txtFoundTime.getText().matches("^([01][0-9]|2[0-3]):[0-5][0-9]$")) {
-            errors += "Found time must be provided and must be in HH:mm format\n";
+            errors += "Η ώρα εύρεσης πρέπει να συμπληρωθεί και να είναι στη μορφή HH:mm.\n";
         }
 
 
