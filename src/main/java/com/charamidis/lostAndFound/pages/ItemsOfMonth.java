@@ -55,7 +55,7 @@ public class ItemsOfMonth {
 
     private void updateChart() {
         LocalDate currentDate = LocalDate.now();
-        LocalDate firstDayOfMonth = LocalDate.now().withDayOfMonth(1);
+        LocalDate firstDayOfMonth = currentDate.withDayOfMonth(1);
         LocalDate lastMonthDate = firstDayOfMonth.minusDays(1); // End of last month
         LocalDate firstDayLastMonth = firstDayOfMonth.minusMonths(1);
 
@@ -67,11 +67,11 @@ public class ItemsOfMonth {
             Statement stm = finalConn.createStatement();
 
             // Query to get the counts of records for last month
-            String recordQuery = "SELECT DATE_FORMAT(record_datetime, '%Y-%m-%d') AS day, COUNT(*) AS count " +
+            String recordQuery = "SELECT strftime('%Y-%m-%d', record_datetime) AS day, COUNT(*) AS count " +
                     "FROM records " +
                     "WHERE record_datetime >= '" + firstDayLastMonth + "' AND record_datetime <= '" + lastMonthDate + "' " +
-                    "GROUP BY DAY(record_datetime) " +
-                    "ORDER BY DAY(record_datetime);";
+                    "GROUP BY strftime('%Y-%m-%d', record_datetime) " +
+                    "ORDER BY strftime('%Y-%m-%d', record_datetime);";
             ResultSet recordResultSet = stm.executeQuery(recordQuery);
             while (recordResultSet.next()) {
                 String day = recordResultSet.getString("day");
@@ -81,11 +81,11 @@ public class ItemsOfMonth {
             recordResultSet.close();
 
             // Query to get the counts of returns for last month
-            String returnQuery = "SELECT DATE_FORMAT(return_date, '%Y-%m-%d') AS day, COUNT(*) AS count " +
+            String returnQuery = "SELECT strftime('%Y-%m-%d', return_date) AS day, COUNT(*) AS count " +
                     "FROM returns " +
                     "WHERE return_date >= '" + firstDayLastMonth + "' AND return_date <= '" + lastMonthDate + "' " +
-                    "GROUP BY DAY(return_date) " +
-                    "ORDER BY DAY(return_date);";
+                    "GROUP BY strftime('%Y-%m-%d', return_date) " +
+                    "ORDER BY strftime('%Y-%m-%d', return_date);";
             ResultSet returnResultSet = stm.executeQuery(returnQuery);
             while (returnResultSet.next()) {
                 String day = returnResultSet.getString("day");

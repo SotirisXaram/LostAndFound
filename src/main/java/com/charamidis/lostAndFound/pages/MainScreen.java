@@ -120,9 +120,11 @@ public class MainScreen {
         });
 
 
+        MenuItem itemsMonth = new MenuItem("Μηνιαία");
+        itemsMonth.setOnAction(e->new ItemsOfMonth(conn));
 
 
-        diagrams.getItems().addAll(itemsLastYear,new SeparatorMenuItem(),returnsLastYear);
+        diagrams.getItems().addAll(itemsLastYear,new SeparatorMenuItem(),returnsLastYear,itemsMonth);
 
         Menu exportData = new Menu("Εξαγωγή");
         MenuItem exportExcel = new MenuItem("Excel");

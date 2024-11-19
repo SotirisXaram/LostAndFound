@@ -67,10 +67,10 @@ public class ReturnsLastYear {
 
         try {
             Statement stm = finalConn.createStatement();
-            String query = "SELECT TO_CHAR(return_date, 'YYYY-MM') AS month, COUNT(*) AS count " +
+            String query = "SELECT strftime('%Y-%m', return_date) AS month, COUNT(*) AS count " +
                     "FROM returns " +
                     "WHERE return_date BETWEEN '" + lastYearDate + "' AND '" + currentDate + "' " +
-                    "GROUP BY TO_CHAR(return_date, 'YYYY-MM') " +
+                    "GROUP BY strftime('%Y-%m', return_date) " +
                     "ORDER BY month;";
 
             ResultSet resultSet = stm.executeQuery(query);
