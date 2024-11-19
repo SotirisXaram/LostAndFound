@@ -39,13 +39,14 @@ public class Main extends Application{
     StackPane stackPane;
     private static final Logger logger = AppLogger.getLogger();
     ConnectionStatusIndicator connectionStatusIndicator;
+    private final String testUserNameDb = "sotirisxaram" ;
+    private final String testPasswordDb = "1234" ;
 
     @Override
     public void start(Stage mainPage) {
         
         //UserName and Password for testing DB (Postgresql config) (Use .env )
-        private String testUserNameDb = "sotirisxaram" ;
-        private String testPasswordDb = "1234" ;
+
         
         //Username field
         lblUserName = new Label("Χρήστης:");
