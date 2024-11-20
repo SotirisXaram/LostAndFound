@@ -162,7 +162,7 @@ public class ReturnScreen {
                     insertStm.setString(7, txtTelephone.getText());
                     insertStm.setString(8, txtIdNumber.getText());
                     insertStm.setString(9, txtFatherName.getText());
-                    insertStm.setObject(10, txtDateOfBirth.getText().isEmpty() ? null : Date.valueOf(txtDateOfBirth.getText()));
+                    insertStm.setObject(10, txtDateOfBirth.getText().isEmpty() ? null : txtDateOfBirth.getText());
                     insertStm.setString(11, txtStreetAddress.getText());
                     insertStm.setString(12, txtStreetNumber.getText());
                     insertStm.setString(13,txtComment.getText().isEmpty()?"":txtComment.getText());
@@ -206,6 +206,12 @@ public class ReturnScreen {
         if (!txtTime.getText().matches("^([01][0-9]|2[0-3]):[0-5][0-9]$")) {
             errors += "Η Ώρα πρέπει να είναι στη μορφή HH:mm.\n";
         }
+
+        if (txtDateOfBirth.getText() != null && !txtDateOfBirth.getText().isEmpty() &&
+                !txtDateOfBirth.getText().matches("^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$")) {
+            errors += "Η Ημερομηνία πρέπει να είναι στη μορφή yyyy-MM-dd πχ 2024-02-19.\n";
+        }
+
 
 
 

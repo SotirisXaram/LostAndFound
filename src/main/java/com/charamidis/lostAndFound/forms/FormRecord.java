@@ -245,43 +245,67 @@ public class FormRecord {
 
         btnDelete = new Button();
 
-        btnDelete.setOnAction(e->{
-            if(listView.getSelectionModel().getSelectedItem()!=null){
+        btnDelete.setOnAction(e -> {
+            if (listView.getSelectionModel().getSelectedItem() != null) {
                 MessageBoxOk m = new MessageBoxOk("Θέλετε σίγουρα να διαγράψετε την εγγραφή?");
                 boolean response = m.getRes();
-                if(response){
+                if (response) {
                     Record c = listView.getSelectionModel().getSelectedItem();
                     listView.getItems().remove(c);
 
-                    if(listView.getItems().size()>0){
+                    if (listView.getItems().size() > 0) {
                         listView.getSelectionModel().select(0);
-                    }else{
+                    } else {
                         enumFormState = EnumFormState.ADD;
-                        changeState(enumFormState,new Record());
+                        changeState(enumFormState, new Record());
                     }
 
-                    try{
-                        String delQuery = "DELETE FROM records WHERE id = ? AND item_description = ?";
-                        PreparedStatement stm = conn.prepareStatement(delQuery);
-                        stm.setInt(1,c.getId());
-                        stm.setString(2,c.getItem_description());
-                        stm.executeUpdate();
-                        stm.close();
-                    }catch (SQLException ex){
+                    try {
+                        // Begin transaction
+                        conn.setAutoCommit(false);
+
+                        // Delete from records table
+                        String delRecordsQuery = "DELETE FROM records WHERE id = ? AND item_description = ?";
+                        try (PreparedStatement stmRecords = conn.prepareStatement(delRecordsQuery)) {
+                            stmRecords.setInt(1, c.getId());
+                            stmRecords.setString(2, c.getItem_description());
+                            stmRecords.executeUpdate();
+                        }
+
+                        // Delete from returns table
+                        String delReturnsQuery = "DELETE FROM returns WHERE id = ?";
+                        try (PreparedStatement stmReturns = conn.prepareStatement(delReturnsQuery)) {
+                            stmReturns.setInt(1, c.getId());
+                            stmReturns.executeUpdate();
+                        }
+
+                        // Commit the transaction
+                        conn.commit();
+                    } catch (SQLException ex) {
+                        // Rollback transaction on error
+                        try {
+                            conn.rollback();
+                        } catch (SQLException rollbackEx) {
+                            new MessageBoxOk("Rollback failed: " + rollbackEx.getMessage());
+                            logger.log(Level.SEVERE, "Error during rollback", rollbackEx);
+                        }
                         new MessageBoxOk(ex.getMessage());
-                        logger.log(Level.FINE,"Error with form record to delete ",ex);
+                        logger.log(Level.FINE, "Error with form record to delete ", ex);
+                    } finally {
+                        try {
+                            conn.setAutoCommit(true); // Restore auto-commit mode
+                        } catch (SQLException finalEx) {
+                            logger.log(Level.SEVERE, "Error resetting auto-commit", finalEx);
+                        }
                     }
-
                 }
-                if(listView.getItems().isEmpty()){
+
+                if (listView.getItems().isEmpty()) {
                     window.close();
                 }
-
-
             }
-
-
         });
+
 
         btnPrint = new Button("Print");
         btnPrint.setGraphic(new ImageView(new Image("printer.png",16,16,true,true)));

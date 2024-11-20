@@ -52,14 +52,15 @@ public class ResetId {
         });
 
         btnSave.setOnAction(e->{
-           MessageBoxOk msg =  new MessageBoxOk("Θέλετε σίγουρα να αλλάξετε το ID ? \n Παρακαλούμε να λάβετε υπόψη ότι η χειροκίνητη αλλαγή αναγνωριστικών βάσης δεδομένων μπορεί να έχει σοβαρές συνέπειες και πρέπει να προσεγγίζεται με προσοχή.");
+           MessageBoxOk msg =  new MessageBoxOk("Θέλετε σίγουρα να αλλάξετε το ID ? \n Παρακαλούμε να λάβετε υπόψη ότι η χειροκίνητη αλλαγή αναγνωριστικών βάσης δεδομένων μπορεί να έχει σοβαρές συνέπειες και πρέπει να προσεγγίζεται με προσοχή \n, το ID που θα δώσετε λαβετε υπόψη οτι θα ειναι ενα επομενη στην επομενη εγγραφη , \nπχ ID : 66 θα μπει στην επομενη εγγραφη το 67.Εαν θελετε το 66 πρεπει να βαλετε το 65\n");
            boolean resp = msg.getRes();
            if(resp){
                if(txtId.getText().trim().isEmpty()){
                    new MessageBoxOk("Δώστε αριθμό");
                }else{
                     if(txtId.getText().trim().matches("[0-9]+")){
-                        String resetQuery = "ALTER SEQUENCE records_id_seq RESTART WITH "+txtId.getText().trim();
+                        String resetQuery = "UPDATE sqlite_sequence SET seq = "+txtId.getText().trim()+" WHERE name = 'records' " ;
+                        //String resetQuery = "ALTER SEQUENCE records_id_seq RESTART WITH "+txtId.getText().trim();
                         try {
                             PreparedStatement pstmt = finalConn.prepareStatement(resetQuery);
                             pstmt.executeUpdate();
