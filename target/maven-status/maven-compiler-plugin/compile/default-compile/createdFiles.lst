@@ -15,7 +15,6 @@ com/charamidis/lostAndFound/forms/ResetId.class
 com/charamidis/lostAndFound/states/EnumFormState.class
 com/charamidis/lostAndFound/forms/DeleteReturn.class
 com/charamidis/lostAndFound/utils/Resources.class
-com/charamidis/lostAndFound/pages/ItemsPerOfficers.class
 com/charamidis/lostAndFound/pages/ItemsOfMonth.class
 com/charamidis/lostAndFound/pages/RecordsShow.class
 com/charamidis/lostAndFound/pages/ContentsPage.class
