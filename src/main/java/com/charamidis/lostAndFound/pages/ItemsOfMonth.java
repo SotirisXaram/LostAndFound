@@ -28,19 +28,24 @@ public class ItemsOfMonth {
     XYChart.Series<String, Number> returnData;
 
     public ItemsOfMonth(Connection conn) {
+        this.finalConn = conn;
 
-        finalConn = conn;
+        // Initialize chart axes and bar chart
         xAxis = new CategoryAxis();
         yAxis = new NumberAxis();
         barChart = new BarChart<>(xAxis, yAxis);
         barChart.setAnimated(false);
+
+        // Initialize data series
         recordData = new XYChart.Series<>();
         returnData = new XYChart.Series<>();
 
+        // Create a layout container
         VBox vBox = new VBox(barChart);
         vBox.setSpacing(10);
         vBox.setPadding(new Insets(10, 10, 10, 10));
 
+        // Set up the scene and window
         scene = new Scene(vBox, 850, 650);
         window = new Stage();
         window.setHeight(650);
@@ -48,8 +53,10 @@ public class ItemsOfMonth {
         window.setScene(scene);
         window.setTitle("Records and Returns of Last Month");
 
+        // Show the window
         window.show();
 
+        // Update the chart with data
         updateChart();
     }
 
@@ -64,6 +71,11 @@ public class ItemsOfMonth {
         returnData.getData().clear();
 
         try {
+            // Ensure the connection is valid
+            if (finalConn == null || finalConn.isClosed()) {
+                throw new SQLException("Database connection is not valid!");
+            }
+
             Statement stm = finalConn.createStatement();
 
             // Query to get the counts of records for last month
@@ -72,7 +84,10 @@ public class ItemsOfMonth {
                     "WHERE record_datetime >= '" + firstDayLastMonth + "' AND record_datetime <= '" + lastMonthDate + "' " +
                     "GROUP BY strftime('%Y-%m-%d', record_datetime) " +
                     "ORDER BY strftime('%Y-%m-%d', record_datetime);";
+
             ResultSet recordResultSet = stm.executeQuery(recordQuery);
+
+            // Populate data for record counts
             while (recordResultSet.next()) {
                 String day = recordResultSet.getString("day");
                 int count = recordResultSet.getInt("count");
@@ -86,7 +101,10 @@ public class ItemsOfMonth {
                     "WHERE return_date >= '" + firstDayLastMonth + "' AND return_date <= '" + lastMonthDate + "' " +
                     "GROUP BY strftime('%Y-%m-%d', return_date) " +
                     "ORDER BY strftime('%Y-%m-%d', return_date);";
+
             ResultSet returnResultSet = stm.executeQuery(returnQuery);
+
+            // Populate data for return counts
             while (returnResultSet.next()) {
                 String day = returnResultSet.getString("day");
                 int count = returnResultSet.getInt("count");
@@ -94,14 +112,18 @@ public class ItemsOfMonth {
             }
             returnResultSet.close();
 
+            // Close the statement
             stm.close();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
+        // Set names for the data series
         recordData.setName("Records");
         returnData.setName("Returns");
 
+        // Clear and update the bar chart with new data
         barChart.getData().clear();
         barChart.getData().addAll(recordData, returnData);
     }

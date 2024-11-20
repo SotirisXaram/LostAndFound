@@ -2,10 +2,7 @@ package com.charamidis.lostAndFound;
 
 import com.charamidis.lostAndFound.models.User;
 import com.charamidis.lostAndFound.pages.MainScreen;
-import com.charamidis.lostAndFound.utils.AppLogger;
-import com.charamidis.lostAndFound.utils.ConnectionStatusIndicator;
-import com.charamidis.lostAndFound.utils.MessageBoxOk;
-import com.charamidis.lostAndFound.utils.Resources;
+import com.charamidis.lostAndFound.utils.*;
 import javafx.application.*;
 import javafx.scene.control.Button;
 import javafx.scene.text.Font;
@@ -17,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.geometry.*;
 import org.mindrot.jbcrypt.*;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;

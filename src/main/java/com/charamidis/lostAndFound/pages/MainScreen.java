@@ -120,11 +120,10 @@ public class MainScreen {
         });
 
 
-        MenuItem itemsMonth = new MenuItem("Μηνιαία");
-        itemsMonth.setOnAction(e->new ItemsOfMonth(conn));
 
 
-        diagrams.getItems().addAll(itemsLastYear,new SeparatorMenuItem(),returnsLastYear,itemsMonth);
+
+        diagrams.getItems().addAll(itemsLastYear,new SeparatorMenuItem(),returnsLastYear);
 
         Menu exportData = new Menu("Εξαγωγή");
         MenuItem exportExcel = new MenuItem("Excel");
@@ -133,7 +132,7 @@ public class MainScreen {
         MenuItem backup = new MenuItem("Αντίγραφο Ασφαλείας");
         backup.setOnAction(e -> {
             try {
-                Database.backupDatabase("lostandfound");
+                Database.backupDatabase("lostandfound.db");
             } catch (Exception ex) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Backup Error");

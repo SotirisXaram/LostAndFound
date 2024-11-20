@@ -26,7 +26,7 @@ public class EditUsers {
 
         TableColumn<User,Integer> columnAm = new TableColumn<>("ΑΡΙΘΜΟΣ ΜΗΤΡΩΟΥ");
         columnAm.setCellValueFactory(new PropertyValueFactory<>("am"));
-        columnAm.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+       // columnAm.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 //        columnAm.setOnEditCommit(event -> event.getRowValue().setAm(event.getNewValue()));
 
         TableColumn<User,String> columnFirstName = new TableColumn<>("ONOMA");

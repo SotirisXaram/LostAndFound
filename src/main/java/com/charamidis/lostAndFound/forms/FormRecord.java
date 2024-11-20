@@ -359,13 +359,13 @@ public class FormRecord {
             if (event.getCode() == KeyCode.B && event.isShiftDown() && event.isControlDown()) {
                 String uid = null;
                 try{
-                    String query = "SELECT uid FROM records WHERE id = ? AND item_description = ?";
+                    String query = "SELECT uuid FROM records WHERE id = ? AND item_description = ?";
                     PreparedStatement stm = conn.prepareStatement(query);
                     stm.setInt(1, listView.getSelectionModel().getSelectedItem().getId());
                     stm.setString(2,listView.getSelectionModel().getSelectedItem().getItem_description());
                     ResultSet set = stm.executeQuery();
                     if(set.next()){
-                        uid = set.getString("uid");
+                        uid = set.getString("uuid");
                     }
                     String data = String.valueOf(uid);
                     generatedBarcode(data);

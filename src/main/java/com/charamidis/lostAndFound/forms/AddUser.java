@@ -74,8 +74,8 @@ public class AddUser {
         });
 
         btnSave.setOnAction(e->{
-            if(txtFirstName.getText().equals("") || txtLastName.getText().equals("") || txtAm.getText().equals("") || txtPassword.getText().equals("") || comboBox.getValue().equals("")){
-                new MessageBoxOk("ΤΑ ΠΕΔΙΑ ΠΡΕΠΕΙ ΝΑ ΣΥΜΠΛΗΡΩΘΟΥΝ");
+            if(!txtAm.getText().matches("^\\d+$") || txtFirstName.getText().equals("") || txtLastName.getText().equals("") || txtAm.getText().equals("") || txtPassword.getText().equals("") || comboBox.getValue().equals("")){
+                new MessageBoxOk("ΤΑ ΠΕΔΙΑ ΠΡΕΠΕΙ ΝΑ ΣΥΜΠΛΗΡΩΘΟΥΝ ΚΑΙ Ο ΑΡΙΘΜΟΣ ΜΗΤΡΩΟΥ ΠΡΕΠΕΙ ΝΑ ΕΙΝΑΙ ΑΚΕΡΑΙΟΣ");
             }else {
                 try{
                     String hashedPassword = BCrypt.hashpw(txtPassword.getText(), BCrypt.gensalt());
