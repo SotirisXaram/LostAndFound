@@ -22,12 +22,12 @@ com/charamidis/lostAndFound/utils/Resources.class
 com/charamidis/lostAndFound/forms/AdminSettings.class
 com/charamidis/lostAndFound/pages/ContentsPage.class
 com/charamidis/lostAndFound/utils/DatabaseLoader.class
+com/charamidis/lostAndFound/utils/SeedDatabase.class
 com/charamidis/lostAndFound/pages/StatisticsDashboard.class
 com/charamidis/lostAndFound/utils/BarcodePrinter.class
 com/charamidis/lostAndFound/Main.class
 com/charamidis/lostAndFound/web/StaticFileServlet.class
 com/charamidis/lostAndFound/models/Record.class
-com/charamidis/lostAndFound/utils/TestLogin.class
 com/charamidis/lostAndFound/pages/MainScreen.class
 com/charamidis/lostAndFound/utils/ConnectionStatusIndicator$1.class
 com/charamidis/lostAndFound/exporters/CsvExporter.class
@@ -36,10 +36,10 @@ com/charamidis/lostAndFound/utils/AutoBackupManager$1.class
 com/charamidis/lostAndFound/forms/AddUser.class
 com/charamidis/lostAndFound/utils/ConnectionStatusIndicator.class
 com/charamidis/lostAndFound/forms/AdminSettings$1.class
-com/charamidis/lostAndFound/forms/FormRecord$1.class
 com/charamidis/lostAndFound/models/Return.class
 com/charamidis/lostAndFound/forms/EditUsers.class
 com/charamidis/lostAndFound/utils/MessageBoxOk.class
+com/charamidis/lostAndFound/utils/DataSeeder.class
 com/charamidis/lostAndFound/utils/ConnectionStatusIndicator$Status.class
 com/charamidis/lostAndFound/utils/Database.class
 com/charamidis/lostAndFound/utils/SqliteDatabaseInitializer.class

@@ -418,6 +418,7 @@ public class ModernSearchForm extends Stage {
     private void editRecord(Record record) {
         // Open FormRecord in edit mode
         FormRecord formRecord = new FormRecord(connection, null);
-        formRecord.loadRecordForEdit(record.getId());
+        // Note: loadRecordForEdit method needs to be implemented in FormRecord
+        new MessageBoxOk("Επεξεργασία εγγραφής ID: " + record.getId() + " - Σε εξέλιξη");
     }
 }
