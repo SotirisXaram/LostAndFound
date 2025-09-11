@@ -5,8 +5,10 @@ import com.charamidis.lostAndFound.exporters.CsvExporter;
 import com.charamidis.lostAndFound.exporters.ExcelExporter;
 import com.charamidis.lostAndFound.forms.*;
 import com.charamidis.lostAndFound.models.User;
+import com.charamidis.lostAndFound.pages.ContentsPage;
+import com.charamidis.lostAndFound.pages.ShowUsers;
 import com.charamidis.lostAndFound.utils.AppLogger;
-import com.charamidis.lostAndFound.utils.AutoBackupManager;
+// AutoBackupManager import removed - class doesn't exist
 import com.charamidis.lostAndFound.utils.Database;
 import com.charamidis.lostAndFound.utils.MessageBoxOk;
 import com.charamidis.lostAndFound.utils.Resources;
@@ -19,6 +21,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.*;
@@ -108,33 +111,12 @@ public class MainScreen {
 
         Menu diagrams = new Menu("_Στατιστικά");
         MenuItem statisticsDashboard = new MenuItem("Dashboard Στατιστικών");
-        MenuItem itemsLastYear = new MenuItem("Εγγραφές Τελευταίου Χρόνου");
-        MenuItem returnsLastYear = new MenuItem("Επιστροφές Τελευταίου Χρόνου");
-        MenuItem itemsOfMonth = new MenuItem("Μηνιαία Στατιστικά");
-        MenuItem itemsPerOfficers = new MenuItem("Στατιστικά χρηστών");
 
         statisticsDashboard.setOnAction(e->{
             new StatisticsDashboard(finalConn);
         });
 
-        itemsLastYear.setOnAction(e->{
-            new ItemsLastYear(finalConn);
-        });
-
-        returnsLastYear.setOnAction(e->{
-            new ReturnsLastYear(finalConn);
-        });
-
-        itemsOfMonth.setOnAction(e->{
-            new ItemsOfMonth(finalConn);
-        });
-
-        itemsPerOfficers.setOnAction(e->{
-            new ItemsPerOfficers(finalConn);
-        });
-
-
-        diagrams.getItems().addAll(statisticsDashboard, new SeparatorMenuItem(), itemsLastYear, returnsLastYear, itemsOfMonth, new SeparatorMenuItem(), itemsPerOfficers);
+        diagrams.getItems().addAll(statisticsDashboard);
 
         Menu exportData = new Menu("Εξαγωγή");
         MenuItem exportExcel = new MenuItem("Excel");
@@ -227,64 +209,144 @@ public class MainScreen {
         }
 
 
-        StackPane stackPane = new StackPane();
+        // Create main container
+        VBox mainContainer = new VBox();
+        mainContainer.setSpacing(0);
+        mainContainer.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
-        Image imgBackground = new Image("background.png");
+        // Header section
+        HBox header = new HBox();
+        header.setPadding(new Insets(20, 30, 20, 30));
+        header.setBackground(new Background(new BackgroundFill(Color.rgb(52, 73, 94), CornerRadii.EMPTY, Insets.EMPTY)));
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setSpacing(20);
 
-        ImageView view = new ImageView(imgBackground);
-        view.setFitWidth(750);
-        view.setFitHeight(600);
-        view.setPreserveRatio(true);
+        // Welcome text
+        VBox welcomeSection = new VBox();
+        welcomeSection.setSpacing(5);
+        
+        Text welcomeText = new Text("Καλώς ήρθατε");
+        welcomeText.setFill(Color.WHITE);
+        welcomeText.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        
+        Text userInfo = new Text(user.getLastName() + " " + user.getFirstName());
+        userInfo.setFill(Color.rgb(189, 195, 199));
+        userInfo.setStyle("-fx-font-size: 16px;");
+        
+        Text userAm = new Text("AM: " + user.getAm());
+        userAm.setFill(Color.rgb(189, 195, 199));
+        userAm.setStyle("-fx-font-size: 14px;");
+        
+        welcomeSection.getChildren().addAll(welcomeText, userInfo, userAm);
 
-        HBox btnMain = new HBox();
-        btnMain.setAlignment(Pos.BOTTOM_CENTER);
-        btnMain.setSpacing(20);
+        // Quick stats section
+        HBox statsSection = new HBox();
+        statsSection.setSpacing(30);
+        statsSection.setAlignment(Pos.CENTER_RIGHT);
+        
+        // Get quick stats from database
+        try {
+            Statement stmt = finalConn.createStatement();
+            
+            // Total records
+            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) as total FROM records");
+            int totalRecords = rs.next() ? rs.getInt("total") : 0;
+            
+            // Pending returns
+            rs = stmt.executeQuery("SELECT COUNT(*) as pending FROM records r LEFT JOIN returns ret ON r.id = ret.id WHERE ret.id IS NULL");
+            int pendingReturns = rs.next() ? rs.getInt("pending") : 0;
+            
+            // This month records
+            rs = stmt.executeQuery("SELECT COUNT(*) as thisMonth FROM records WHERE strftime('%Y-%m', record_datetime) = strftime('%Y-%m', 'now')");
+            int thisMonthRecords = rs.next() ? rs.getInt("thisMonth") : 0;
+            
+            VBox totalRecordsBox = createStatBox("Σύνολο Εγγραφών", String.valueOf(totalRecords), Color.rgb(46, 204, 113));
+            VBox pendingBox = createStatBox("Εκκρεμείς", String.valueOf(pendingReturns), Color.rgb(241, 196, 15));
+            VBox monthlyBox = createStatBox("Αυτό το Μήνα", String.valueOf(thisMonthRecords), Color.rgb(52, 152, 219));
+            
+            statsSection.getChildren().addAll(totalRecordsBox, pendingBox, monthlyBox);
+            
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error getting statistics", e);
+        }
 
-        Button openBook = new Button();
-        openBook.setBackground(Background.EMPTY);
-        openBook.setGraphic(new ImageView(new Image("open-book.png",120,120,true,true)));
-        openBook.setOnAction(e->{
-            new RecordsShow(finalConn);
+        header.getChildren().addAll(welcomeSection, statsSection);
+        HBox.setHgrow(welcomeSection, Priority.ALWAYS);
+
+        // Main content area
+        VBox contentArea = new VBox();
+        contentArea.setPadding(new Insets(40, 30, 40, 30));
+        contentArea.setSpacing(30);
+        contentArea.setAlignment(Pos.CENTER);
+
+        // Quick actions title
+        Text quickActionsTitle = new Text("Γρήγορες Ενέργειες");
+        quickActionsTitle.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-fill: #2c3e50;");
+        contentArea.getChildren().add(quickActionsTitle);
+
+        // Action buttons grid
+        GridPane actionGrid = new GridPane();
+        actionGrid.setHgap(30);
+        actionGrid.setVgap(30);
+        actionGrid.setAlignment(Pos.CENTER);
+
+        // Create action buttons - using same functionality as menubar
+        Button recordsBtn = createActionButton("Εγγραφές", "Διαχείριση εγγραφών", "open-book.png", Color.rgb(52, 152, 219));
+        recordsBtn.setOnAction(e -> new RecordsShow(finalConn)); // Same as menubar
+
+        Button returnsBtn = createActionButton("Επιστροφές", "Διαχείριση επιστροφών", "return-box.png", Color.rgb(46, 204, 113));
+        returnsBtn.setOnAction(e -> new ReturnsShow(finalConn)); // Same as menubar
+
+        Button searchBtn = createActionButton("Αναζήτηση", "Αναζήτηση εγγραφών", "paper.png", Color.rgb(155, 89, 182));
+        searchBtn.setOnAction(e -> new ModernSearchForm(finalConn));
+
+        Button newRecordBtn = createActionButton("Νέα Εγγραφή", "Δημιουργία νέας εγγραφής", "open-book.png", Color.rgb(231, 76, 60));
+        newRecordBtn.setOnAction(e -> new FormRecord(finalConn, user)); // Same as menubar
+
+        Button statisticsBtn = createActionButton("Στατιστικά", "Προβολή στατιστικών", "paper.png", Color.rgb(241, 196, 15));
+        statisticsBtn.setOnAction(e -> new StatisticsDashboard(finalConn)); // Same as menubar
+
+        Button profileBtn = createActionButton("Προφίλ", "Διαχείριση προφίλ", "open-book.png", Color.rgb(52, 73, 94));
+        profileBtn.setOnAction(e -> {
+            ProfileForm profileForm = new ProfileForm(finalConn, user);
+            Scene profileScene = profileForm.getScene();
+            Stage profileStage = new Stage();
+            profileStage.setScene(profileScene);
+            profileStage.setTitle("Profile");
+            profileStage.setWidth(450);
+            profileStage.setMaximized(false);
+            profileStage.setMaxWidth(800);
+            profileStage.setMinWidth(450);
+            profileStage.setMinHeight(550);
+            profileStage.setMaxHeight(700);
+            profileStage.setHeight(550);
+            profileStage.initModality(Modality.APPLICATION_MODAL);
+            profileStage.show();
         });
 
-        Button returnBox = new Button();
-        returnBox.setBackground(Background.EMPTY);
-        returnBox.setGraphic(new ImageView(new Image("return-box.png",120,120,true,true)));
-        returnBox.setOnAction(e->{
-            new ReturnsShow(finalConn);
-        });
+        // Add buttons to grid
+        actionGrid.add(recordsBtn, 0, 0);
+        actionGrid.add(returnsBtn, 1, 0);
+        actionGrid.add(searchBtn, 2, 0);
+        actionGrid.add(newRecordBtn, 0, 1);
+        actionGrid.add(statisticsBtn, 1, 1);
+        actionGrid.add(profileBtn, 2, 1);
 
-        Button paper = new Button();
-        paper.setBackground(Background.EMPTY);
-        paper.setGraphic(new ImageView(new Image("paper.png",120,120,true,true)));
-        paper.setOnAction(e->{
-            new SearchRecordsShow(finalConn);
-        });
+        contentArea.getChildren().add(actionGrid);
 
-        btnMain.getChildren().addAll(openBook,returnBox,paper);
+        // Footer
+        HBox footer = new HBox();
+        footer.setPadding(new Insets(20, 30, 20, 30));
+        footer.setBackground(new Background(new BackgroundFill(Color.rgb(236, 240, 241), CornerRadii.EMPTY, Insets.EMPTY)));
+        footer.setAlignment(Pos.CENTER);
+        
+        Text footerText = new Text("Lost & Found Management System v2.0.1");
+        footerText.setStyle("-fx-font-size: 12px; -fx-fill: #7f8c8d;");
+        footer.getChildren().add(footerText);
 
+        mainContainer.getChildren().addAll(menuBar, header, contentArea, footer);
 
-        Text txtWelcome = new Text(user.getLastName()+" "+user.getFirstName()+"\n"+String.valueOf(user.getAm()));
-
-
-
-        StackPane.setAlignment(txtWelcome, Pos.BOTTOM_RIGHT);
-        txtWelcome.setY(510);
-        txtWelcome.setTextAlignment(TextAlignment.RIGHT);
-
-        stackPane.getChildren().add(view);
-        stackPane.setAlignment(Pos.CENTER);
-        stackPane.getChildren().add(txtWelcome);
-        stackPane.setPrefHeight(1080);
-        stackPane.getChildren().add(btnMain);
-
-        VBox vbox = new VBox();
-        vbox.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE,CornerRadii.EMPTY,Insets.EMPTY)));
-
-        vbox.getChildren().addAll(menuBar,stackPane);
-
-
-        scene = new Scene(vbox);
+        scene = new Scene(mainContainer);
 
 
 
@@ -292,6 +354,87 @@ public class MainScreen {
 
     public Scene getScene(){
         return this.scene;
+    }
+
+    private VBox createStatBox(String title, String value, Color color) {
+        VBox statBox = new VBox();
+        statBox.setAlignment(Pos.CENTER);
+        statBox.setSpacing(5);
+        statBox.setPadding(new Insets(15, 20, 15, 20));
+        statBox.setBackground(new Background(new BackgroundFill(color, new CornerRadii(8), Insets.EMPTY)));
+        statBox.setMinWidth(120);
+
+        Text valueText = new Text(value);
+        valueText.setFill(Color.WHITE);
+        valueText.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+
+        Text titleText = new Text(title);
+        titleText.setFill(Color.WHITE);
+        titleText.setStyle("-fx-font-size: 12px;");
+
+        statBox.getChildren().addAll(valueText, titleText);
+        return statBox;
+    }
+
+    private Button createActionButton(String title, String description, String iconName, Color color) {
+        Button button = new Button();
+        button.setPrefSize(200, 120);
+        button.setStyle("-fx-background-color: " + toHexColor(color) + "; " +
+                       "-fx-background-radius: 12; " +
+                       "-fx-border-radius: 12; " +
+                       "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);");
+        button.setOnMouseEntered(e -> {
+            button.setStyle("-fx-background-color: " + toHexColor(color.darker()) + "; " +
+                           "-fx-background-radius: 12; " +
+                           "-fx-border-radius: 12; " +
+                           "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 15, 0, 0, 3);");
+        });
+        button.setOnMouseExited(e -> {
+            button.setStyle("-fx-background-color: " + toHexColor(color) + "; " +
+                           "-fx-background-radius: 12; " +
+                           "-fx-border-radius: 12; " +
+                           "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);");
+        });
+
+        VBox buttonContent = new VBox();
+        buttonContent.setAlignment(Pos.CENTER);
+        buttonContent.setSpacing(10);
+
+        // Icon
+        try {
+            ImageView icon = new ImageView(new Image(iconName, 40, 40, true, true));
+            icon.setPreserveRatio(true);
+            buttonContent.getChildren().add(icon);
+        } catch (Exception e) {
+            // If icon not found, create a simple circle
+            Circle iconCircle = new Circle(20, color.brighter());
+            buttonContent.getChildren().add(iconCircle);
+        }
+
+        // Title
+        Text titleText = new Text(title);
+        titleText.setFill(Color.WHITE);
+        titleText.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+        titleText.setTextAlignment(TextAlignment.CENTER);
+
+        // Description
+        Text descText = new Text(description);
+        descText.setFill(Color.WHITE);
+        descText.setStyle("-fx-font-size: 11px;");
+        descText.setTextAlignment(TextAlignment.CENTER);
+        descText.setWrappingWidth(180);
+
+        buttonContent.getChildren().addAll(titleText, descText);
+        button.setGraphic(buttonContent);
+
+        return button;
+    }
+
+    private String toHexColor(Color color) {
+        return String.format("#%02X%02X%02X",
+                (int) (color.getRed() * 255),
+                (int) (color.getGreen() * 255),
+                (int) (color.getBlue() * 255));
     }
 
 

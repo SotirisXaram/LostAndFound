@@ -75,13 +75,24 @@ public class ReturnsShow {
             stm = connection.createStatement();
             ResultSet resultSet = stm.executeQuery("SELECT * FROM returns ORDER BY id");
             while (resultSet.next()) {
+                // Safe date parsing
+                String returnDate = resultSet.getString("return_date");
+                String returnTime = resultSet.getString("return_time");
+                String returnDateOfBirth = resultSet.getString("return_date_of_birth");
+                String returnTimestamp = resultSet.getString("return_timestamp");
+                
+                // Handle null values
+                if (returnTime == null) returnTime = "";
+                if (returnDateOfBirth == null) returnDateOfBirth = "";
+                if (returnTimestamp == null) returnTimestamp = "";
+                
                 Return ret = new Return(resultSet.getInt("id"), resultSet.getInt("return_officer"),
                         resultSet.getString("return_last_name"), resultSet.getString("return_first_name"),
-                        resultSet.getDate("return_date").toString(), resultSet.getObject("return_time")==null?"":resultSet.getString("return_time"),
+                        returnDate, returnTime,
                         resultSet.getString("return_telephone"), resultSet.getString("return_id_number"),
-                        resultSet.getString("return_father_name"), resultSet.getObject("return_date_of_birth")==null?"":resultSet.getString("return_date_of_birth"),
-                        resultSet.getString("return_street_address"), resultSet.getString("return_street_number"),resultSet.getTimestamp("return_timestamp").toString()
-                        ,resultSet.getString("comment"));
+                        resultSet.getString("return_father_name"), returnDateOfBirth,
+                        resultSet.getString("return_street_address"), resultSet.getString("return_street_number"),
+                        returnTimestamp, resultSet.getString("comment"));
                 tv.getItems().add(ret);
             }
         } catch (SQLException exception) {

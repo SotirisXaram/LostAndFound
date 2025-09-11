@@ -56,24 +56,51 @@ public class ExcelExporter {
                     
                     // Handle different data types properly
                     if (columnType.equals("TIMESTAMP") || columnType.equals("DATETIME")) {
-                        Timestamp timestamp = rs.getTimestamp(i);
-                        if (timestamp != null) {
-                            // Convert to local time without timezone conversion
-                            row.add(timestamp.toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
+                        // Handle timestamp parsing safely
+                        String timestampStr = rs.getString(i);
+                        if (timestampStr != null && !timestampStr.isEmpty()) {
+                            try {
+                                java.time.LocalDateTime dateTime;
+                                if (timestampStr.contains("T")) {
+                                    // ISO format: 2025-09-13T01:21:40.305103
+                                    dateTime = java.time.LocalDateTime.parse(timestampStr.substring(0, 19));
+                                } else {
+                                    // Try parsing as regular timestamp
+                                    dateTime = java.time.LocalDateTime.parse(timestampStr);
+                                }
+                                row.add(dateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
+                            } catch (Exception e) {
+                                // Fallback to current date/time if parsing fails
+                                row.add(java.time.LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
+                            }
                         } else {
                             row.add("");
                         }
                     } else if (columnType.equals("DATE")) {
-                        Date date = rs.getDate(i);
-                        if (date != null) {
-                            row.add(date.toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                        // Handle date parsing safely
+                        String dateStr = rs.getString(i);
+                        if (dateStr != null && !dateStr.isEmpty()) {
+                            try {
+                                java.time.LocalDate date = java.time.LocalDate.parse(dateStr);
+                                row.add(date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                            } catch (Exception e) {
+                                // Fallback to current date if parsing fails
+                                row.add(java.time.LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                            }
                         } else {
                             row.add("");
                         }
                     } else if (columnType.equals("TIME")) {
-                        Time time = rs.getTime(i);
-                        if (time != null) {
-                            row.add(time.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                        // Handle time parsing safely
+                        String timeStr = rs.getString(i);
+                        if (timeStr != null && !timeStr.isEmpty()) {
+                            try {
+                                java.time.LocalTime time = java.time.LocalTime.parse(timeStr);
+                                row.add(time.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                            } catch (Exception e) {
+                                // Fallback to current time if parsing fails
+                                row.add(java.time.LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                            }
                         } else {
                             row.add("");
                         }

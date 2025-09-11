@@ -18,6 +18,7 @@ import javafx.stage.*;
 import javafx.scene.*;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCombination;
 import javafx.geometry.*;
 import org.mindrot.jbcrypt.*;
 
@@ -46,6 +47,8 @@ public class Main extends Application{
 
     @Override
     public void start(Stage mainPage) {
+        // Force SLF4J to use simple logger
+        System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
         
         // Initialize SQLite database
         SqliteDatabaseInitializer.initializeDatabase();
@@ -53,8 +56,8 @@ public class Main extends Application{
         ImageManager.initializeDataFolder();
         // Start automatic backup
         AutoBackupManager.startAutoBackup();
-        // Initialize web server (optional)
-        WebServerManager.initialize();
+        // Initialize web server (optional) - temporarily disabled
+        // WebServerManager.initialize();
 
         
         //Username field
@@ -85,8 +88,9 @@ public class Main extends Application{
         btnEnter.setDefaultButton(true);
         btnEnter.setFont(Font.font("Segoe UI", FontWeight.BOLD, 16));
         btnEnter.setOnAction(e->{
-
+            System.out.println("Login button clicked");
             if(validateForm()){
+                System.out.println("Form validation passed");
                     try{
                         Connection conn = SqliteDatabaseInitializer.getConnection();
                         connection = conn;
@@ -95,7 +99,9 @@ public class Main extends Application{
                         ResultSet resultSet = stm.executeQuery();
                        if(resultSet.next()) {
                            String hashedPassword = resultSet.getString("password");
+                           System.out.println("User found, checking password...");
                            if (BCrypt.checkpw(txtPassword.getText().trim(), hashedPassword)) {
+                               System.out.println("Password correct, logging in...");
                                User user = new User(resultSet.getInt("am"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("date_of_birth"), LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")), resultSet.getString("role"));
                                MainScreen mainScreen = new MainScreen(connection, user, mainPage);
                                Scene mainScene = mainScreen.getScene();
@@ -113,12 +119,17 @@ public class Main extends Application{
                                loginPage.setHeight(windowHeight);
                                loginPage.setMinWidth(1000);
                                loginPage.setMinHeight(700);
-                               loginPage.setMaxWidth(screenWidth * 0.95);
-                               loginPage.setMaxHeight(screenHeight * 0.95);
+                               loginPage.setMaxWidth(screenWidth);
+                               loginPage.setMaxHeight(screenHeight);
                                loginPage.setResizable(true);
                                loginPage.setX((screenWidth - windowWidth) / 2);
                                loginPage.setY((screenHeight - windowHeight) / 2);
+                               
+                               // Enable full screen capability for main window
+                               loginPage.setFullScreenExitHint("Press F11 or Escape to exit full screen");
+                               loginPage.setFullScreenExitKeyCombination(KeyCombination.keyCombination("F11"));
                            } else {
+                               System.out.println("Password incorrect");
                                new MessageBoxOk("Λάθος ΟΝΟΜΑ ή ΚΩΔΙΚΟΣ\n");
 
                            }
@@ -126,6 +137,7 @@ public class Main extends Application{
 
                            resultSet.close();
                        }else{
+                           System.out.println("User not found");
                            new MessageBoxOk("Λάθος ΟΝΟΜΑ ή ΚΩΔΙΚΟΣ\n");
 
                        }
@@ -173,13 +185,17 @@ public class Main extends Application{
         loginPage.setHeight(loginWindowHeight);
         loginPage.setMinWidth(500);
         loginPage.setMinHeight(600);
-        loginPage.setMaxWidth(loginScreenWidth * 0.5);
-        loginPage.setMaxHeight(loginScreenHeight * 0.8);
+        loginPage.setMaxWidth(loginScreenWidth);
+        loginPage.setMaxHeight(loginScreenHeight);
         loginPage.setResizable(true);
         loginPage.setX((loginScreenWidth - loginWindowWidth) / 2);
         loginPage.setY((loginScreenHeight - loginWindowHeight) / 2);
         loginPage.setTitle("Lost & Found - Σύνδεση");
         loginPage.setMaximized(false);
+        
+        // Enable full screen capability
+        loginPage.setFullScreenExitHint("Press F11 or Escape to exit full screen");
+        loginPage.setFullScreenExitKeyCombination(KeyCombination.keyCombination("F11"));
 
         loginPage.show();
 

@@ -9,6 +9,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
 import javafx.stage.*;
 import javafx.scene.*;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
 import javafx.geometry.Insets;
@@ -230,7 +231,7 @@ public class RecordsShow {
             cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
             return cell;
         });
-        
+
         // Found Location
         TableColumn<Record, String> columnLocation = new TableColumn<>("Found Location");
         columnLocation.setCellValueFactory(new PropertyValueFactory<>("found_location"));
@@ -368,37 +369,70 @@ public class RecordsShow {
         stage.setResizable(true);
         stage.setMinWidth(1000);
         stage.setMinHeight(700);
-        stage.setMaxWidth(screenWidth * 0.98);
-        stage.setMaxHeight(screenHeight * 0.98);
+        stage.setMaxWidth(screenWidth);
+        stage.setMaxHeight(screenHeight);
         
         // Center window
         stage.setX((screenWidth - windowWidth) / 2);
         stage.setY((screenHeight - windowHeight) / 2);
+        
+        // Enable full screen capability
+        stage.setFullScreenExitHint("Press F11 or Escape to exit full screen");
+        stage.setFullScreenExitKeyCombination(KeyCombination.keyCombination("F11"));
     }
 
     private void loadRecords() {
         allRecords.clear();
         tv.getItems().clear();
-        
+
         try (Statement stm = connection.createStatement()) {
             ResultSet resultSet = stm.executeQuery("SELECT * FROM records ORDER BY id DESC");
             while (resultSet.next()) {
+                // Handle timestamp parsing more safely
+                String recordDateTime = resultSet.getString("record_datetime");
+                String recordDate = "";
+                String recordTime = "";
+                
+                if (recordDateTime != null && !recordDateTime.isEmpty()) {
+                    try {
+                        // Handle different timestamp formats
+                        java.time.LocalDateTime dateTime;
+                        if (recordDateTime.contains("T")) {
+                            // ISO format: 2025-09-13T01:21:40.305103
+                            dateTime = java.time.LocalDateTime.parse(recordDateTime.substring(0, 19));
+                        } else {
+                            // Try parsing as regular timestamp
+                            dateTime = java.time.LocalDateTime.parse(recordDateTime);
+                        }
+                        recordDate = dateTime.toLocalDate().toString();
+                        recordTime = dateTime.toLocalTime().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"));
+                    } catch (Exception e) {
+                        // Fallback to current date/time if parsing fails
+                        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+                        recordDate = now.toLocalDate().toString();
+                        recordTime = now.toLocalTime().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"));
+                    }
+                }
+                
                 Record record = new Record(
-                    resultSet.getInt("id"),
-                    resultSet.getTimestamp("record_datetime").toLocalDateTime().toLocalDate().toString(),
-                    resultSet.getTimestamp("record_datetime").toLocalDateTime().toLocalTime().withSecond(0).toString(),
-                    resultSet.getInt("officer_id"),
-                    resultSet.getString("founder_last_name"),
-                    resultSet.getString("founder_first_name"),
-                    resultSet.getString("founder_id_number"),
-                    resultSet.getString("founder_telephone"),
-                    resultSet.getString("founder_street_address"),
-                    resultSet.getString("founder_street_number"),
-                    resultSet.getString("founder_father_name"),
-                    resultSet.getString("founder_area_inhabitant"),
-                    resultSet.getDate("found_date"),
-                    resultSet.getTime("found_time"),
-                    resultSet.getString("found_location"),
+                        resultSet.getInt("id"),
+                    recordDate,
+                    recordTime,
+                        resultSet.getInt("officer_id"),
+                        resultSet.getString("founder_last_name"),
+                        resultSet.getString("founder_first_name"),
+                        resultSet.getString("founder_id_number"),
+                        resultSet.getString("founder_telephone"),
+                        resultSet.getString("founder_street_address"),
+                        resultSet.getString("founder_street_number"),
+                        resultSet.getString("founder_father_name"),
+                        resultSet.getString("founder_area_inhabitant"),
+                    // Handle date parsing safely
+                    resultSet.getString("found_date") != null ? 
+                        java.sql.Date.valueOf(resultSet.getString("found_date")) : null,
+                    resultSet.getString("found_time") != null ? 
+                        java.sql.Time.valueOf(resultSet.getString("found_time")) : null,
+                        resultSet.getString("found_location"),
                     resultSet.getString("item_description"),
                     resultSet.getString("item_category"),
                     resultSet.getString("item_brand"),
