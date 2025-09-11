@@ -51,7 +51,37 @@ public class ExcelExporter {
             while (rs.next()) {
                 List<String> row = new ArrayList<>();
                 for (int i = 1; i <= columnCount; i++) {
-                    row.add(rs.getString(i));
+                    String columnName = metaData.getColumnName(i);
+                    String columnType = metaData.getColumnTypeName(i);
+                    
+                    // Handle different data types properly
+                    if (columnType.equals("TIMESTAMP") || columnType.equals("DATETIME")) {
+                        Timestamp timestamp = rs.getTimestamp(i);
+                        if (timestamp != null) {
+                            // Convert to local time without timezone conversion
+                            row.add(timestamp.toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
+                        } else {
+                            row.add("");
+                        }
+                    } else if (columnType.equals("DATE")) {
+                        Date date = rs.getDate(i);
+                        if (date != null) {
+                            row.add(date.toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                        } else {
+                            row.add("");
+                        }
+                    } else if (columnType.equals("TIME")) {
+                        Time time = rs.getTime(i);
+                        if (time != null) {
+                            row.add(time.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                        } else {
+                            row.add("");
+                        }
+                    } else {
+                        // For other types, use string representation
+                        String value = rs.getString(i);
+                        row.add(value != null ? value : "");
+                    }
                 }
                 data.add(row);
             }

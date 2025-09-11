@@ -17,16 +17,23 @@ public class Record implements Serializable {
    private String founder_father_name;
    private String founder_area_inhabitant;
    private Date found_date;
-   private String found_location;
-   private String item_description;
-   private Time found_time;
-   private String record_time;
+    private String found_location;
+    private String item_description;
+    private Time found_time;
+    private String record_time;
+    private String item_category;
+    private String item_brand;
+    private String item_model;
+    private String item_color;
+    private String item_serial_number;
+    private String storage_location;
+    private String picture_path;
 
     public Record(){
 
     }
 
-    public Record(Integer id, String record_date,String record_time, Integer officer_id, String founder_last_name, String founder_first_name, String founder_id_number, String founder_telephone, String founder_street_address, String founder_street_number, String founder_father_name, String founder_area_inhabitant, Date found_date,Time found_time, String found_location, String item_description) {
+    public Record(Integer id, String record_date,String record_time, Integer officer_id, String founder_last_name, String founder_first_name, String founder_id_number, String founder_telephone, String founder_street_address, String founder_street_number, String founder_father_name, String founder_area_inhabitant, Date found_date,Time found_time, String found_location, String item_description, String item_category, String item_brand, String item_model, String item_color, String item_serial_number, String storage_location, String picture_path) {
         this.id = id;
         this.record_date=record_date;
         this.record_time=record_time;
@@ -43,6 +50,13 @@ public class Record implements Serializable {
         this.found_time = found_time;
         this.found_location = found_location;
         this.item_description = item_description;
+        this.item_category = item_category;
+        this.item_brand = item_brand;
+        this.item_model = item_model;
+        this.item_color = item_color;
+        this.item_serial_number = item_serial_number;
+        this.storage_location = storage_location;
+        this.picture_path = picture_path;
     }
 
     public Integer getId() {
@@ -171,6 +185,62 @@ public class Record implements Serializable {
 
     public void setRecord_time(String record_time) {
         this.record_time = record_time;
+    }
+
+    public String getItem_category() {
+        return item_category;
+    }
+
+    public void setItem_category(String item_category) {
+        this.item_category = item_category;
+    }
+
+    public String getItem_brand() {
+        return item_brand;
+    }
+
+    public void setItem_brand(String item_brand) {
+        this.item_brand = item_brand;
+    }
+
+    public String getItem_model() {
+        return item_model;
+    }
+
+    public void setItem_model(String item_model) {
+        this.item_model = item_model;
+    }
+
+    public String getItem_color() {
+        return item_color;
+    }
+
+    public void setItem_color(String item_color) {
+        this.item_color = item_color;
+    }
+
+    public String getItem_serial_number() {
+        return item_serial_number;
+    }
+
+    public void setItem_serial_number(String item_serial_number) {
+        this.item_serial_number = item_serial_number;
+    }
+
+    public String getStorage_location() {
+        return storage_location;
+    }
+
+    public void setStorage_location(String storage_location) {
+        this.storage_location = storage_location;
+    }
+
+    public String getPicture_path() {
+        return picture_path;
+    }
+
+    public void setPicture_path(String picture_path) {
+        this.picture_path = picture_path;
     }
 
     @Override

@@ -105,9 +105,32 @@ public class EditUsers {
             stm.setString(2, user.getFirstName());
             stm.setString(3, user.getLastName());
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate localDate = LocalDate.parse(user.getBirthday(), formatter);
-            java.sql.Date sqlDate = java.sql.Date.valueOf(localDate);
+            // Handle different date formats
+            String birthday = user.getBirthday();
+            java.sql.Date sqlDate;
+            
+            try {
+                // Try parsing as yyyy-MM-dd first
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate localDate = LocalDate.parse(birthday, formatter);
+                sqlDate = java.sql.Date.valueOf(localDate);
+            } catch (Exception e1) {
+                try {
+                    // Try parsing as dd/MM/yyyy
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    LocalDate localDate = LocalDate.parse(birthday, formatter);
+                    sqlDate = java.sql.Date.valueOf(localDate);
+                } catch (Exception e2) {
+                    try {
+                        // Try parsing as timestamp (milliseconds)
+                        long timestamp = Long.parseLong(birthday);
+                        sqlDate = new java.sql.Date(timestamp);
+                    } catch (Exception e3) {
+                        // If all else fails, use current date
+                        sqlDate = java.sql.Date.valueOf(LocalDate.now());
+                    }
+                }
+            }
             stm.setDate(4, sqlDate);
 
             stm.setString(5, user.getRole());

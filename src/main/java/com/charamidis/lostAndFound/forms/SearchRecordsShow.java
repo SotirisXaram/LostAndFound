@@ -129,7 +129,14 @@ public class SearchRecordsShow {
                         resultSet.getDate("found_date"),
                         resultSet.getTime("found_time"),
                         resultSet.getString("found_location"),
-                        resultSet.getString("item_description")
+                        resultSet.getString("item_description"),
+                        resultSet.getString("item_category"),
+                        resultSet.getString("item_brand"),
+                        resultSet.getString("item_model"),
+                        resultSet.getString("item_color"),
+                        resultSet.getString("item_serial_number"),
+                        resultSet.getString("storage_location"),
+                        resultSet.getString("picture_path")
 
                 );
                 data.add(record);
@@ -168,7 +175,13 @@ public class SearchRecordsShow {
                         || Objects.toString(record.getFound_date(), "").toLowerCase().contains(lowerCaseFilter)
                         || Objects.toString(record.getFound_time(), "").toLowerCase().contains(lowerCaseFilter)
                         || Objects.toString(record.getFound_location(), "").toLowerCase().contains(lowerCaseFilter)
-                        || Objects.toString(record.getItem_description(), "").toLowerCase().contains(lowerCaseFilter);
+                        || Objects.toString(record.getItem_description(), "").toLowerCase().contains(lowerCaseFilter)
+                        || Objects.toString(record.getItem_category(), "").toLowerCase().contains(lowerCaseFilter)
+                        || Objects.toString(record.getItem_brand(), "").toLowerCase().contains(lowerCaseFilter)
+                        || Objects.toString(record.getItem_model(), "").toLowerCase().contains(lowerCaseFilter)
+                        || Objects.toString(record.getItem_color(), "").toLowerCase().contains(lowerCaseFilter)
+                        || Objects.toString(record.getItem_serial_number(), "").toLowerCase().contains(lowerCaseFilter)
+                        || Objects.toString(record.getStorage_location(), "").toLowerCase().contains(lowerCaseFilter);
             });
         });
 

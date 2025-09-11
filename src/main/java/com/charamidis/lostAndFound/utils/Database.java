@@ -5,60 +5,71 @@ import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Database {
     private static final Logger logger = AppLogger.getLogger();
 
-    public static void backupDatabase(String databaseName) throws IOException, InterruptedException {
+    public static void backupDatabase(String databaseName) {
+        try {
+            FileChooser fileChooser = new FileChooser();
 
-        FileChooser fileChooser = new FileChooser();
+            // Set initial directory and extension filters
+            fileChooser.setInitialDirectory(new File(System.getProperty("user.home")+ File.separator + "Desktop"));
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("SQLite Database Files", "*.db"));
+            fileChooser.setInitialFileName("lostandfound_backup");
 
-        // Set initial directory and extension filters (optional)
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")+ File.separator + "Desktop"));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("SQL Files", "*.sql"));
-        fileChooser.setInitialFileName("backup.sql");
+            // Show save dialog
+            File destinationFile = fileChooser.showSaveDialog(null);
 
-        // Show save dialog
-        File file = fileChooser.showSaveDialog(null);
+            // If user cancels the dialog, return
+            if (destinationFile == null) {
+                return;
+            }
 
-        // If user cancels the dialog, return
-        if (file == null) {
+            // Source database file
+            File sourceFile = new File("lostandfound.db");
+            
+            if (!sourceFile.exists()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Backup Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Database file 'lostandfound.db' not found!");
+                alert.showAndWait();
+                return;
+            }
 
-            return;
-        }
+            // Copy the database file
+            try (java.io.FileInputStream fis = new java.io.FileInputStream(sourceFile);
+                 java.io.FileOutputStream fos = new java.io.FileOutputStream(destinationFile)) {
+                
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = fis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, length);
+                }
+            }
 
-        // Get the chosen file path
-        String filePath = file.getAbsolutePath();
-
-        // Command to execute pg_dump
-        String[] cmd = {
-                "pg_dump",
-                "-U", "sotirisxaram",
-                "-d", databaseName,
-                "-f", filePath
-        };
-
-        // Execute pg_dump command
-        ProcessBuilder pb = new ProcessBuilder(cmd);
-        Process process = pb.start();
-
-        // Wait for the process to complete
-        int exitCode = process.waitFor();
-
-        // Check if the backup was successful
-        if (exitCode == 0) {
             // Backup successful
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Backup Successful");
             alert.setHeaderText(null);
-            alert.setContentText("Backup of the database 'lostandfound' was successful.");
+            alert.setContentText("Database backup created successfully at:\n" + destinationFile.getAbsolutePath());
             alert.showAndWait();
-            System.out.println("Backup successful");
+            logger.info("SQLite database backup successful: " + destinationFile.getAbsolutePath());
 
-        } else {
-            logger.log(Level.WARNING,"Backup database fail ");
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error during database backup", e);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Backup Error");
+            alert.setHeaderText(null);
+            alert.setContentText("An error occurred during backup: " + e.getMessage());
+            alert.showAndWait();
         }
     }
 }

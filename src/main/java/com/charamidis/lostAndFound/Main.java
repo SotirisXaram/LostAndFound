@@ -6,6 +6,10 @@ import com.charamidis.lostAndFound.utils.AppLogger;
 import com.charamidis.lostAndFound.utils.ConnectionStatusIndicator;
 import com.charamidis.lostAndFound.utils.MessageBoxOk;
 import com.charamidis.lostAndFound.utils.Resources;
+import com.charamidis.lostAndFound.utils.AutoBackupManager;
+import com.charamidis.lostAndFound.utils.SqliteDatabaseInitializer;
+import com.charamidis.lostAndFound.utils.ImageManager;
+import com.charamidis.lostAndFound.web.WebServerManager;
 import javafx.application.*;
 import javafx.scene.control.Button;
 import javafx.scene.text.Font;
@@ -39,42 +43,52 @@ public class Main extends Application{
     StackPane stackPane;
     private static final Logger logger = AppLogger.getLogger();
     ConnectionStatusIndicator connectionStatusIndicator;
-    private final String testUserNameDb = "sotirisxaram" ;
-    private final String testPasswordDb = "1234" ;
 
     @Override
     public void start(Stage mainPage) {
         
-        //UserName and Password for testing DB (Postgresql config) (Use .env )
+        // Initialize SQLite database
+        SqliteDatabaseInitializer.initializeDatabase();
+        // Initialize data folder structure
+        ImageManager.initializeDataFolder();
+        // Start automatic backup
+        AutoBackupManager.startAutoBackup();
+        // Initialize web server (optional)
+        WebServerManager.initialize();
 
         
         //Username field
         lblUserName = new Label("Χρήστης:");
+        lblUserName.getStyleClass().add("form-label");
         txtUsername = new TextField();
         txtUsername.setPromptText("Αριθμός μητρώου...");
-        txtUsername.setFont(Font.font("Arial", FontWeight.BLACK,12));
-        hboxUsername = new HBox();
-        hboxUsername.getChildren().addAll(lblUserName,txtUsername);
-        hboxUsername.setAlignment(Pos.CENTER);
-        hboxUsername.setPadding(new Insets(10,0,10,0));
-
+        txtUsername.setFont(Font.font("Segoe UI", FontWeight.NORMAL, 14));
+        
+        VBox usernameContainer = new VBox();
+        usernameContainer.getChildren().addAll(lblUserName, txtUsername);
+        usernameContainer.setSpacing(8);
+        usernameContainer.setAlignment(Pos.CENTER_LEFT);
 
         //Password field
         lblPassword = new Label("Κωδικός:");
+        lblPassword.getStyleClass().add("form-label");
         txtPassword = new PasswordField();
         txtPassword.setPromptText("Κωδικός...");
-        txtPassword.setFont(Font.font("Arial", FontWeight.LIGHT,12));
-        hboxPassword = new HBox();
-        hboxPassword.getChildren().addAll(lblPassword,txtPassword);
-        hboxPassword.setAlignment(Pos.CENTER);
+        txtPassword.setFont(Font.font("Segoe UI", FontWeight.NORMAL, 14));
+        
+        VBox passwordContainer = new VBox();
+        passwordContainer.getChildren().addAll(lblPassword, txtPassword);
+        passwordContainer.setSpacing(8);
+        passwordContainer.setAlignment(Pos.CENTER_LEFT);
 
         btnEnter = new Button("Είσοδος");
         btnEnter.setDefaultButton(true);
+        btnEnter.setFont(Font.font("Segoe UI", FontWeight.BOLD, 16));
         btnEnter.setOnAction(e->{
 
             if(validateForm()){
                     try{
-                        Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/lostandfound", testUserNameDb, testPasswordDb );
+                        Connection conn = SqliteDatabaseInitializer.getConnection();
                         connection = conn;
                         PreparedStatement stm = conn.prepareStatement("SELECT * FROM users WHERE am=?");
                         stm.setInt(1, Integer.parseInt(txtUsername.getText().trim()));
@@ -87,6 +101,23 @@ public class Main extends Application{
                                Scene mainScene = mainScreen.getScene();
                                loginPage.setTitle("Lost And Found");
                                loginPage.setScene(mainScene);
+                               // Make main window responsive
+                               Screen screen = Screen.getPrimary();
+                               double screenWidth = screen.getVisualBounds().getWidth();
+                               double screenHeight = screen.getVisualBounds().getHeight();
+                               
+                               double windowWidth = Math.min(1200, screenWidth * 0.9);
+                               double windowHeight = Math.min(800, screenHeight * 0.9);
+                               
+                               loginPage.setWidth(windowWidth);
+                               loginPage.setHeight(windowHeight);
+                               loginPage.setMinWidth(1000);
+                               loginPage.setMinHeight(700);
+                               loginPage.setMaxWidth(screenWidth * 0.95);
+                               loginPage.setMaxHeight(screenHeight * 0.95);
+                               loginPage.setResizable(true);
+                               loginPage.setX((screenWidth - windowWidth) / 2);
+                               loginPage.setY((screenHeight - windowHeight) / 2);
                            } else {
                                new MessageBoxOk("Λάθος ΟΝΟΜΑ ή ΚΩΔΙΚΟΣ\n");
 
@@ -111,11 +142,11 @@ public class Main extends Application{
         Label logoLabel = new Label("Lost & Found");
         logoLabel.setId("logo");
 
-
-
         vbox = new VBox();
-        vbox.getChildren().addAll(logoLabel,hboxUsername,hboxPassword,btnEnter);
+        vbox.getChildren().addAll(logoLabel, usernameContainer, passwordContainer, btnEnter);
         vbox.setAlignment(Pos.CENTER);
+        vbox.setSpacing(20);
+        vbox.getStyleClass().add("login-container");
 
 
         scene = new Scene(vbox);
@@ -130,13 +161,24 @@ public class Main extends Application{
         loginPage.setScene(scene);
 
 
-        loginPage.setWidth(850);
-        loginPage.setHeight(600);
-        loginPage.setMinWidth(720);
+        // Make login window responsive
+        Screen loginScreen = Screen.getPrimary();
+        double loginScreenWidth = loginScreen.getVisualBounds().getWidth();
+        double loginScreenHeight = loginScreen.getVisualBounds().getHeight();
+        
+        double loginWindowWidth = Math.min(600, loginScreenWidth * 0.4);
+        double loginWindowHeight = Math.min(700, loginScreenHeight * 0.7);
+        
+        loginPage.setWidth(loginWindowWidth);
+        loginPage.setHeight(loginWindowHeight);
+        loginPage.setMinWidth(500);
         loginPage.setMinHeight(600);
-        loginPage.setX((Screen.getPrimary().getVisualBounds().getWidth()-750)/2);
-        loginPage.setY((Screen.getPrimary().getVisualBounds().getHeight()-600)/2);
-        loginPage.setTitle("ΣΥΝΔΕΣΗ");
+        loginPage.setMaxWidth(loginScreenWidth * 0.5);
+        loginPage.setMaxHeight(loginScreenHeight * 0.8);
+        loginPage.setResizable(true);
+        loginPage.setX((loginScreenWidth - loginWindowWidth) / 2);
+        loginPage.setY((loginScreenHeight - loginWindowHeight) / 2);
+        loginPage.setTitle("Lost & Found - Σύνδεση");
         loginPage.setMaximized(false);
 
         loginPage.show();

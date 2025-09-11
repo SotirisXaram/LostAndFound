@@ -59,9 +59,11 @@ public class ResetId {
                    new MessageBoxOk("Δώστε αριθμό");
                }else{
                     if(txtId.getText().trim().matches("[0-9]+")){
-                        String resetQuery = "ALTER SEQUENCE records_id_seq RESTART WITH "+txtId.getText().trim();
+                        // SQLite doesn't support sequences, so we'll update the sqlite_sequence table
+                        String resetQuery = "UPDATE sqlite_sequence SET seq = ? WHERE name = 'records'";
                         try {
                             PreparedStatement pstmt = finalConn.prepareStatement(resetQuery);
+                            pstmt.setInt(1, Integer.parseInt(txtId.getText().trim()) - 1);
                             pstmt.executeUpdate();
                             pstmt.close();
                             new MessageBoxOk("Το ID έχει επαναφερθεί.");

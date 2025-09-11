@@ -53,7 +53,38 @@ public class CsvExporter {
                     // Write data rows
                     while (rs.next()) {
                         for (int i = 1; i <= columnCount; i++) {
-                            writer.append(rs.getString(i));
+                            String columnType = metaData.getColumnTypeName(i);
+                            String value;
+                            
+                            // Handle different data types properly
+                            if (columnType.equals("TIMESTAMP") || columnType.equals("DATETIME")) {
+                                Timestamp timestamp = rs.getTimestamp(i);
+                                if (timestamp != null) {
+                                    value = timestamp.toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+                                } else {
+                                    value = "";
+                                }
+                            } else if (columnType.equals("DATE")) {
+                                Date date = rs.getDate(i);
+                                if (date != null) {
+                                    value = date.toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                                } else {
+                                    value = "";
+                                }
+                            } else if (columnType.equals("TIME")) {
+                                Time time = rs.getTime(i);
+                                if (time != null) {
+                                    value = time.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+                                } else {
+                                    value = "";
+                                }
+                            } else {
+                                // For other types, use string representation
+                                String stringValue = rs.getString(i);
+                                value = stringValue != null ? stringValue : "";
+                            }
+                            
+                            writer.append(value);
                             if (i < columnCount) {
                                 writer.append(",");
                             }

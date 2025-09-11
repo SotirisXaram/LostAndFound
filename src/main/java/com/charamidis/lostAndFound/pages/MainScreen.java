@@ -6,6 +6,7 @@ import com.charamidis.lostAndFound.exporters.ExcelExporter;
 import com.charamidis.lostAndFound.forms.*;
 import com.charamidis.lostAndFound.models.User;
 import com.charamidis.lostAndFound.utils.AppLogger;
+import com.charamidis.lostAndFound.utils.AutoBackupManager;
 import com.charamidis.lostAndFound.utils.Database;
 import com.charamidis.lostAndFound.utils.MessageBoxOk;
 import com.charamidis.lostAndFound.utils.Resources;
@@ -106,10 +107,15 @@ public class MainScreen {
 
 
         Menu diagrams = new Menu("_Στατιστικά");
+        MenuItem statisticsDashboard = new MenuItem("Dashboard Στατιστικών");
         MenuItem itemsLastYear = new MenuItem("Εγγραφές Τελευταίου Χρόνου");
         MenuItem returnsLastYear = new MenuItem("Επιστροφές Τελευταίου Χρόνου");
-//        MenuItem itemsOfMonth = new MenuItem("Μηνιαία Στατιστικά");
+        MenuItem itemsOfMonth = new MenuItem("Μηνιαία Στατιστικά");
         MenuItem itemsPerOfficers = new MenuItem("Στατιστικά χρηστών");
+
+        statisticsDashboard.setOnAction(e->{
+            new StatisticsDashboard(finalConn);
+        });
 
         itemsLastYear.setOnAction(e->{
             new ItemsLastYear(finalConn);
@@ -119,16 +125,16 @@ public class MainScreen {
             new ReturnsLastYear(finalConn);
         });
 
-//        itemsOfMonth.setOnAction(e->{
-//            new ItemsOfMonth(finalConn);
-//        });
+        itemsOfMonth.setOnAction(e->{
+            new ItemsOfMonth(finalConn);
+        });
 
         itemsPerOfficers.setOnAction(e->{
             new ItemsPerOfficers(finalConn);
         });
 
 
-        diagrams.getItems().addAll(itemsLastYear,returnsLastYear ,new SeparatorMenuItem(),itemsPerOfficers);
+        diagrams.getItems().addAll(statisticsDashboard, new SeparatorMenuItem(), itemsLastYear, returnsLastYear, itemsOfMonth, new SeparatorMenuItem(), itemsPerOfficers);
 
         Menu exportData = new Menu("Εξαγωγή");
         MenuItem exportExcel = new MenuItem("Excel");
@@ -207,10 +213,15 @@ public class MainScreen {
 
         usersMenu.getItems().addAll(showUsers,new SeparatorMenuItem(),editUsers,addUser,deleteUser);
 
-
+        Menu adminMenu = new Menu("_Admin");
+        MenuItem adminSettings = new MenuItem("_Settings");
+        adminSettings.setOnAction(e->{
+            AdminSettings.showSettings();
+        });
+        adminMenu.getItems().addAll(adminSettings);
 
         if (user.getRole().equals("admin")) {
-            menuBar.getMenus().addAll(manage, usersMenu,diagrams,exportData,utils,help);
+            menuBar.getMenus().addAll(manage, usersMenu,diagrams,exportData,utils,adminMenu,help);
         } else {
             menuBar.getMenus().addAll(manage,diagrams,exportData,help);
         }

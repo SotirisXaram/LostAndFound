@@ -51,7 +51,7 @@ public class ItemsPerOfficers {
 
         try {
             Statement stm = finalConn.createStatement();
-            String query = "SELECT CONCAT(u.last_name, ' ', u.first_name) AS officer_name, COUNT(*) AS count " +
+            String query = "SELECT (u.last_name || ' ' || u.first_name) AS officer_name, COUNT(*) AS count " +
                     "FROM records r " +
                     "JOIN users u ON r.officer_id = u.am " +
                     "WHERE r.found_date BETWEEN '" + firstDayOfMonth + "' AND '" + currentDate + "' " +

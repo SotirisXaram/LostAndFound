@@ -1,53 +1,262 @@
-/* style.css */
+/* Minimal Clean UI Styles */
 .root {
+    -fx-font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    -fx-background-color: #f8f9fa;
+    -fx-font-size: 14px;
+}
+
+/* Login Screen Styles */
+.login-container {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 8px;
+    -fx-border-color: #e9ecef;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-padding: 32px;
+    -fx-max-width: 350px;
+    -fx-max-height: 450px;
+}
+
+#logo {
+    -fx-font-size: 32px;
     -fx-font-family: 'Segoe UI', sans-serif;
-    -fx-background-color: #f0f0f0;
+    -fx-font-weight: 600;
+    -fx-text-fill: #2c3e50;
+    -fx-padding: 0 0 24px 0;
 }
 
-.label {
-    -fx-font-size: 16px;
-    -fx-text-fill: #333;
+/* Form Labels */
+.form-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #495057;
+    -fx-padding: 0 0 8px 0;
 }
 
-
-#logo{
--fx-font-size: 40px;
--fx-font-family: 'Arial Black';
--fx-font-weight: bold;
--fx-text-fill: #336699;
--fx-padding: 8px;
--fx-underline: true;
--fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0);
-
-}
-
+/* Input Fields */
 .text-field, .password-field {
-    -fx-pref-width: 250px;
-    -fx-pref-height: 30px;
-    -fx-padding: 8px;
-    -fx-border-color: #ccc;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
+    -fx-pref-width: 280px;
+    -fx-pref-height: 40px;
+    -fx-padding: 10px 12px;
+    -fx-font-size: 14px;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ced4da;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-text-fill: #495057;
 }
 
+.text-field:focused, .password-field:focused {
+    -fx-border-color: #007bff;
+    -fx-background-color: #ffffff;
+}
+
+/* Buttons */
 .button {
-    -fx-background-color: #4CAF50;
+    -fx-background-color: #007bff;
     -fx-text-fill: white;
-    -fx-pref-width: 100px;
-    -fx-pref-height: 35px;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-pref-width: 280px;
+    -fx-pref-height: 40px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
     -fx-cursor: hand;
+    -fx-padding: 0;
 }
 
 .button:hover {
-    -fx-background-color: #45a049;
+    -fx-background-color: #0056b3;
 }
 
-.vbox {
-    -fx-padding: 20px;
-    -fx-border-color: #ccc;
+.button:pressed {
+    -fx-background-color: #004085;
+}
+
+/* Main Application Styles */
+.main-container {
+    -fx-background-color: #ffffff;
+    -fx-padding: 0;
+}
+
+/* Menu Bar */
+.menu-bar {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.menu {
+    -fx-background-color: transparent;
+    -fx-padding: 8px 12px;
+}
+
+.menu:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+.menu-item {
+    -fx-background-color: #ffffff;
+    -fx-padding: 8px 16px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #495057;
+}
+
+.menu-item:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+/* Tables */
+.table-view {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dee2e6;
     -fx-border-width: 1px;
-    -fx-border-radius: 10px;
-    -fx-background-radius: 10px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+.table-view .column-header {
+    -fx-background-color: #f8f9fa;
+    -fx-text-fill: #495057;
+    -fx-font-weight: 600;
+    -fx-font-size: 14px;
+    -fx-padding: 12px 8px;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 0 1px 1px 0;
+}
+
+.table-view .table-cell {
+    -fx-padding: 8px;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 0 1px 1px 0;
+    -fx-font-size: 14px;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #e3f2fd;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+/* Cards and Panels */
+.card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 16px;
+    -fx-border-radius: 16px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 0);
+    -fx-padding: 24px;
+}
+
+/* Statistics Cards */
+.stat-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 16px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 0);
+    -fx-padding: 24px;
+    -fx-min-width: 200px;
+    -fx-min-height: 120px;
+}
+
+.stat-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #6c757d;
+    -fx-padding: 0 0 8px 0;
+}
+
+.stat-value {
+    -fx-font-size: 32px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #2c3e50;
+}
+
+/* Form Styles */
+.form-container {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 16px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 0);
+    -fx-padding: 32px;
+    -fx-max-width: 600px;
+}
+
+.form-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #2c3e50;
+    -fx-padding: 0 0 24px 0;
+}
+
+/* Alert and Dialog Styles */
+.alert {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 16px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 20, 0, 0, 0);
+}
+
+.alert .header-panel {
+    -fx-background-color: #667eea;
+    -fx-background-radius: 16px 16px 0 0;
+}
+
+.alert .content {
+    -fx-padding: 24px;
+    -fx-font-size: 16px;
+    -fx-text-fill: #2c3e50;
+}
+
+/* Scroll Panes */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Progress Indicators */
+.progress-indicator {
+    -fx-progress-color: #667eea;
+}
+
+/* Tooltips */
+.tooltip {
+    -fx-background-color: #2c3e50;
+    -fx-text-fill: white;
+    -fx-background-radius: 8px;
+    -fx-font-size: 12px;
+    -fx-padding: 8px 12px;
+}
+
+/* Status Indicators */
+.status-online {
+    -fx-fill: #28a745;
+}
+
+.status-offline {
+    -fx-fill: #dc3545;
+}
+
+/* Animation Classes */
+.fade-in {
+    -fx-opacity: 0;
+}
+
+.slide-in {
+    -fx-translate-x: -100;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .login-container {
+        -fx-max-width: 350px;
+        -fx-padding: 30px;
+    }
+    
+    .text-field, .password-field, .button {
+        -fx-pref-width: 280px;
+    }
 }

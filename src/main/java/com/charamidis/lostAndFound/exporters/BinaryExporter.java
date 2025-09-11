@@ -67,7 +67,14 @@ public class BinaryExporter {
                                 rs.getDate("found_date"),
                                 rs.getTime("found_time"),
                                 rs.getString("found_location"),
-                                rs.getString("item_description")
+                                rs.getString("item_description"),
+                                rs.getString("item_category"),
+                                rs.getString("item_brand"),
+                                rs.getString("item_model"),
+                                rs.getString("item_color"),
+                                rs.getString("item_serial_number"),
+                                rs.getString("storage_location"),
+                                rs.getString("picture_path")
                         );
                         oos.writeObject(record);
                     }
