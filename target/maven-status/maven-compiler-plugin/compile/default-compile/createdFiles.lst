@@ -18,8 +18,10 @@ com/charamidis/lostAndFound/forms/ResetId.class
 com/charamidis/lostAndFound/states/EnumFormState.class
 com/charamidis/lostAndFound/forms/DeleteReturn.class
 com/charamidis/lostAndFound/web/AdminWebSocket.class
+com/charamidis/lostAndFound/forms/ModernSearchForm.class
 com/charamidis/lostAndFound/utils/Resources.class
 com/charamidis/lostAndFound/forms/AdminSettings.class
+com/charamidis/lostAndFound/pages/RecordsShow.class
 com/charamidis/lostAndFound/pages/ContentsPage.class
 com/charamidis/lostAndFound/utils/DatabaseLoader.class
 com/charamidis/lostAndFound/utils/SeedDatabase.class
@@ -28,8 +30,10 @@ com/charamidis/lostAndFound/utils/BarcodePrinter.class
 com/charamidis/lostAndFound/Main.class
 com/charamidis/lostAndFound/web/StaticFileServlet.class
 com/charamidis/lostAndFound/models/Record.class
+com/charamidis/lostAndFound/pages/RecordsShow$1.class
 com/charamidis/lostAndFound/pages/MainScreen.class
 com/charamidis/lostAndFound/utils/ConnectionStatusIndicator$1.class
+com/charamidis/lostAndFound/forms/FormRecord.class
 com/charamidis/lostAndFound/exporters/CsvExporter.class
 com/charamidis/lostAndFound/utils/ImageManager.class
 com/charamidis/lostAndFound/utils/AutoBackupManager$1.class

@@ -292,7 +292,7 @@ public class MainScreen {
 
         // Create action buttons - using same functionality as menubar
         Button recordsBtn = createActionButton("Εγγραφές", "Διαχείριση εγγραφών", "open-book.png", Color.rgb(52, 152, 219));
-        recordsBtn.setOnAction(e -> new RecordsShow(finalConn)); // Same as menubar
+        recordsBtn.setOnAction(e -> new FormRecord(finalConn, user)); // Same as menubar
 
         Button returnsBtn = createActionButton("Επιστροφές", "Διαχείριση επιστροφών", "return-box.png", Color.rgb(46, 204, 113));
         returnsBtn.setOnAction(e -> new ReturnsShow(finalConn)); // Same as menubar

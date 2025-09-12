@@ -229,7 +229,7 @@ public class FormRecord extends Stage {
         grid.add(foundDatePicker, 1, 2);
         
         foundTimeField = new TextField();
-        foundTimeField.setText(LocalTime.now().minusMinutes(30).format(DateTimeFormatter.ofPattern("HH:mm")));
+        foundTimeField.setText(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
         foundTimeField.setPromptText("HH:mm");
         grid.add(new Label("Ώρα Εύρεσης:"), 0, 3);
         grid.add(foundTimeField, 1, 3);
@@ -430,8 +430,11 @@ public class FormRecord extends Stage {
         recordsTable.setPrefHeight(500);
         
         // Create columns
-        TableColumn<Record, Integer> idCol = new TableColumn<>("ID");
-        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        TableColumn<Record, String> idCol = new TableColumn<>("ID");
+        idCol.setCellValueFactory(cellData -> {
+            Record record = cellData.getValue();
+            return new javafx.beans.property.SimpleStringProperty(record.getId() != null ? record.getId().toString() : "");
+        });
         idCol.setPrefWidth(60);
         
         TableColumn<Record, String> dateCol = new TableColumn<>("Ημερομηνία");
@@ -448,18 +451,29 @@ public class FormRecord extends Stage {
         timeCol.setCellValueFactory(cellData -> {
             Record record = cellData.getValue();
             if (record.getFound_time() != null) {
-                return new javafx.beans.property.SimpleStringProperty(record.getFound_time().toString());
+                // Format time as HH:mm
+                String timeStr = record.getFound_time().toString();
+                if (timeStr.length() > 5) {
+                    timeStr = timeStr.substring(0, 5); // Take only HH:mm part
+                }
+                return new javafx.beans.property.SimpleStringProperty(timeStr);
             }
             return new javafx.beans.property.SimpleStringProperty("");
         });
         timeCol.setPrefWidth(80);
         
         TableColumn<Record, String> descriptionCol = new TableColumn<>("Περιγραφή");
-        descriptionCol.setCellValueFactory(new PropertyValueFactory<>("item_description"));
+        descriptionCol.setCellValueFactory(cellData -> {
+            Record record = cellData.getValue();
+            return new javafx.beans.property.SimpleStringProperty(record.getItem_description() != null ? record.getItem_description() : "");
+        });
         descriptionCol.setPrefWidth(200);
         
         TableColumn<Record, String> categoryCol = new TableColumn<>("Κατηγορία");
-        descriptionCol.setCellValueFactory(new PropertyValueFactory<>("item_category"));
+        categoryCol.setCellValueFactory(cellData -> {
+            Record record = cellData.getValue();
+            return new javafx.beans.property.SimpleStringProperty(record.getItem_category() != null ? record.getItem_category() : "");
+        });
         categoryCol.setPrefWidth(120);
         
         TableColumn<Record, String> founderCol = new TableColumn<>("Αναζητών");
@@ -476,6 +490,15 @@ public class FormRecord extends Stage {
         // Initialize data
         recordsList = FXCollections.observableArrayList();
         recordsTable.setItems(recordsList);
+        
+        // Force table to refresh when data changes
+        recordsList.addListener((javafx.collections.ListChangeListener<Record>) change -> {
+            while (change.next()) {
+                if (change.wasAdded() || change.wasRemoved() || change.wasUpdated()) {
+                    Platform.runLater(() -> recordsTable.refresh());
+                }
+            }
+        });
         
         // Add selection listener
         recordsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
@@ -570,10 +593,18 @@ public class FormRecord extends Stage {
                 record.setStorage_location(rs.getString("storage_location"));
                 record.setPicture_path(rs.getString("picture_path"));
                 
-                recordsList.add(record);
-            }
-            
+            recordsList.add(record);
+        }
+        
+            System.out.println("📊 Loaded " + recordsList.size() + " records into table");
             stmt.close();
+            
+            // Force table refresh by clearing and re-setting items
+            Platform.runLater(() -> {
+                ObservableList<Record> tempList = FXCollections.observableArrayList(recordsList);
+                recordsTable.setItems(tempList);
+                recordsTable.refresh();
+            });
         } catch (SQLException e) {
             new MessageBoxOk("Σφάλμα φόρτωσης εγγραφών: " + e.getMessage());
             e.printStackTrace();
@@ -856,7 +887,7 @@ public class FormRecord extends Stage {
         founderFatherNameField.clear();
         founderAreaInhabitantField.clear();
         foundDatePicker.setValue(LocalDate.now().minusDays(1));
-        foundTimeField.setText(LocalTime.now().minusMinutes(30).format(DateTimeFormatter.ofPattern("HH:mm")));
+        foundTimeField.setText(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
         foundLocationField.clear();
         itemDescriptionField.clear();
         itemCategoryCombo.setValue(null);
@@ -926,6 +957,6 @@ public class FormRecord extends Stage {
             return false;
         }
         
-        return true;
+            return true;
     }
 }

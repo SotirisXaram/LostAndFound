@@ -189,23 +189,39 @@ public class ModernSearchForm extends Stage {
         idCol.setPrefWidth(60);
         
         TableColumn<Record, String> dateCol = new TableColumn<>("Ημερομηνία");
-        dateCol.setCellValueFactory(new PropertyValueFactory<>("foundDate"));
+        dateCol.setCellValueFactory(cellData -> {
+            Record record = cellData.getValue();
+            if (record.getFound_date() != null) {
+                return new javafx.beans.property.SimpleStringProperty(record.getFound_date().toString());
+            }
+            return new javafx.beans.property.SimpleStringProperty("");
+        });
         dateCol.setPrefWidth(100);
         
         TableColumn<Record, String> timeCol = new TableColumn<>("Ώρα");
-        timeCol.setCellValueFactory(new PropertyValueFactory<>("foundTime"));
+        timeCol.setCellValueFactory(cellData -> {
+            Record record = cellData.getValue();
+            if (record.getFound_time() != null) {
+                String timeStr = record.getFound_time().toString();
+                if (timeStr.length() > 5) {
+                    timeStr = timeStr.substring(0, 5); // Take only HH:mm part
+                }
+                return new javafx.beans.property.SimpleStringProperty(timeStr);
+            }
+            return new javafx.beans.property.SimpleStringProperty("");
+        });
         timeCol.setPrefWidth(80);
         
         TableColumn<Record, String> descriptionCol = new TableColumn<>("Περιγραφή");
-        descriptionCol.setCellValueFactory(new PropertyValueFactory<>("itemDescription"));
+        descriptionCol.setCellValueFactory(new PropertyValueFactory<>("item_description"));
         descriptionCol.setPrefWidth(200);
         
         TableColumn<Record, String> categoryCol = new TableColumn<>("Κατηγορία");
-        categoryCol.setCellValueFactory(new PropertyValueFactory<>("itemCategory"));
+        categoryCol.setCellValueFactory(new PropertyValueFactory<>("item_category"));
         categoryCol.setPrefWidth(120);
         
         TableColumn<Record, String> locationCol = new TableColumn<>("Τοποθεσία");
-        locationCol.setCellValueFactory(new PropertyValueFactory<>("foundLocation"));
+        locationCol.setCellValueFactory(new PropertyValueFactory<>("found_location"));
         locationCol.setPrefWidth(150);
         
         // Status column removed - not available in Record model
@@ -301,13 +317,16 @@ public class ModernSearchForm extends Stage {
                     try {
                         LocalDateTime dateTime;
                         if (recordDateTime.contains("T")) {
-                            dateTime = LocalDateTime.parse(recordDateTime.substring(0, 19));
+                            // Handle microseconds in datetime
+                            String cleanDateTime = recordDateTime.substring(0, 19);
+                            dateTime = LocalDateTime.parse(cleanDateTime);
                         } else {
                             dateTime = LocalDateTime.parse(recordDateTime);
                         }
                         recordDate = dateTime.toLocalDate().toString();
                         recordTime = dateTime.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"));
                     } catch (Exception e) {
+                        System.out.println("Error parsing record_datetime: " + recordDateTime + " - " + e.getMessage());
                         LocalDateTime now = LocalDateTime.now();
                         recordDate = now.toLocalDate().toString();
                         recordTime = now.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"));
@@ -350,7 +369,13 @@ public class ModernSearchForm extends Stage {
                 recordList.add(record);
             }
             
+            System.out.println("📊 ModernSearchForm loaded " + recordList.size() + " records");
             stmt.close();
+            
+            // Refresh the table to ensure data is displayed
+            Platform.runLater(() -> {
+                tableView.refresh();
+            });
         } catch (SQLException e) {
             new MessageBoxOk("Σφάλμα φόρτωσης εγγραφών: " + e.getMessage());
             e.printStackTrace();
