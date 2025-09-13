@@ -5,7 +5,6 @@ import com.charamidis.lostAndFound.pages.MainScreen;
 import com.charamidis.lostAndFound.utils.AppLogger;
 import com.charamidis.lostAndFound.utils.ConnectionStatusIndicator;
 import com.charamidis.lostAndFound.utils.MessageBoxOk;
-import com.charamidis.lostAndFound.utils.Resources;
 import com.charamidis.lostAndFound.utils.AutoBackupManager;
 import com.charamidis.lostAndFound.utils.SqliteDatabaseInitializer;
 import com.charamidis.lostAndFound.utils.ImageManager;
@@ -249,11 +248,19 @@ public class Main extends Application{
         } catch (SQLException exception) {
             logger.log(Level.SEVERE,"Error closing the connection:",exception);
         }
+        // Don't stop the web server when JavaFX application stops
+        // WebServerManager.stopWebServer();
     }
 
 
 
     public static void main(String[] args){
+        // Add shutdown hook to properly stop web server when application exits
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("🛑 Shutting down application...");
+            WebServerManager.stopWebServer();
+        }));
+        
         launch(args);
     }
 }

@@ -95,18 +95,32 @@ public class WebServerManager {
             context.addServlet(new ServletHolder(new StaticFileServlet()), "/*");
             
             server.setHandler(context);
-            server.start();
             
-        System.out.println("🌐 Web Admin Dashboard started at: http://localhost:" + port + "/admin");
-        System.out.println("📱 Mobile-friendly interface available");
-        System.out.println("🔐 Admin password: " + adminPassword);
-        System.out.println("🔒 Basic authentication enabled for security");
-        
-        // Display network information for remote access
-        displayNetworkInfo();
+            // Start server in a separate thread to prevent blocking
+            Thread serverThread = new Thread(() -> {
+                try {
+                    server.start();
+                    System.out.println("🌐 Web Admin Dashboard started at: http://localhost:" + port + "/admin");
+                    System.out.println("📱 Mobile-friendly interface available");
+                    System.out.println("🔐 Admin password: " + adminPassword);
+                    System.out.println("🔒 Basic authentication enabled for security");
+                    
+                    // Display network information for remote access
+                    displayNetworkInfo();
+                    
+                    // Start periodic status updates
+                    startStatusUpdates();
+                    
+                    // Keep the server running
+                    server.join();
+                } catch (Exception e) {
+                    System.err.println("Web server error: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            });
             
-            // Start periodic status updates
-            startStatusUpdates();
+            serverThread.setDaemon(true); // Make it a daemon thread so it doesn't prevent JVM exit
+            serverThread.start();
             
         } catch (Exception e) {
             System.err.println("Failed to start web server: " + e.getMessage());
@@ -201,9 +215,9 @@ public class WebServerManager {
             
             // Try to get public IP
             try {
-                InetAddress publicIP = InetAddress.getByName("checkip.amazonaws.com");
-                System.out.println("🌐 Public IP: " + getPublicIP());
-                System.out.println("🌍 Remote Access: http://" + getPublicIP() + ":" + port + "/admin");
+                String publicIP = getPublicIP();
+                System.out.println("🌐 Public IP: " + publicIP);
+                System.out.println("🌍 Remote Access: http://" + publicIP + ":" + port + "/admin");
                 System.out.println("   (Requires port forwarding on your router)");
             } catch (Exception e) {
                 System.out.println("🌐 Public IP: Could not determine automatically");

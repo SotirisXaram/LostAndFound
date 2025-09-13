@@ -190,12 +190,15 @@ public class PublicRecordServlet extends HttpServlet {
         html.append("        // Apple Wallet functionality\n");
         html.append("        function addToWallet(event) {\n");
         html.append("            event.preventDefault();\n");
-        html.append("            const url = event.target.href;\n");
+        html.append("            // Get the current record UID from the URL\n");
+        html.append("            const currentUrl = window.location.pathname;\n");
+        html.append("            const recordUid = currentUrl.split('/').pop();\n");
+        html.append("            const walletUrl = '/wallet/' + recordUid;\n");
         html.append("            \n");
         html.append("            // Check if device supports Apple Wallet\n");
         html.append("            if (navigator.userAgent.indexOf('iPhone') > -1 || navigator.userAgent.indexOf('iPad') > -1) {\n");
         html.append("                // For iOS devices, try to open the pass directly\n");
-        html.append("                window.location.href = url;\n");
+        html.append("                window.location.href = walletUrl;\n");
         html.append("            } else {\n");
         html.append("                // For other devices, show instructions\n");
         html.append("                alert('Apple Wallet is only available on iOS devices (iPhone/iPad).\\n\\n' +\n");

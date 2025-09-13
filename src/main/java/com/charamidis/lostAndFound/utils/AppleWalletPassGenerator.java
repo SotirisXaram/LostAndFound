@@ -25,7 +25,7 @@ import java.util.zip.ZipOutputStream;
 public class AppleWalletPassGenerator {
     
     private static final String PASS_TYPE_IDENTIFIER = "pass.com.charamidis.lostandfound";
-    private static final String TEAM_IDENTIFIER = "YOUR_TEAM_ID"; // Replace with your Apple Developer Team ID
+    private static final String TEAM_IDENTIFIER = "1234567890"; // Placeholder Team ID
     private static final String ORGANIZATION_NAME = "Lost & Found System";
     private static final String PASS_DESCRIPTION = "Lost Item Record";
     
