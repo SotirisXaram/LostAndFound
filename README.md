@@ -101,11 +101,11 @@ To access the web dashboard from outside your local network, configure port forw
 
 ## Database
 
-Uses SQLite database stored in `data/lostAndFound.db`
+Uses SQLite database stored in `./lostAndFound.db`
 
 ## Configuration
 
-- Database: `data/lostAndFound.db`
+- Database: `./lostAndFound.db`
 - Images: `Desktop/export_data/images/`
 - Backups: `data/backups/`
 - Web server: Port 8080
