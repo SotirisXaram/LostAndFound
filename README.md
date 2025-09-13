@@ -33,7 +33,7 @@ A desktop application for managing lost and found items with database management
 
 ## Default Login
 
-- Username: `287874`
+- Username: `123456`
 - Password: `123456`
 
 ## Usage

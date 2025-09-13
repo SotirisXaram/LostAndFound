@@ -113,11 +113,11 @@ public class AdminApiServlet extends HttpServlet {
             }
             
             // Records by status
-            try (PreparedStatement stmt = conn.prepareStatement("SELECT 'stored' as status, COUNT(*) FROM records")) {
+            try (PreparedStatement stmt = conn.prepareStatement("SELECT COALESCE(status, 'stored') as status, COUNT(*) FROM records GROUP BY COALESCE(status, 'stored')")) {
                 ResultSet rs = stmt.executeQuery();
                 JsonObject statusCounts = new JsonObject();
-                if (rs.next()) {
-                    statusCounts.addProperty("stored", rs.getInt(1));
+                while (rs.next()) {
+                    statusCounts.addProperty(rs.getString("status"), rs.getInt(2));
                 }
                 stats.add("recordsByStatus", statusCounts);
             }
@@ -160,7 +160,7 @@ public class AdminApiServlet extends HttpServlet {
              PreparedStatement stmt = conn.prepareStatement(
                  "SELECT id, record_datetime, founder_first_name, founder_last_name, item_description, " +
                  "found_location, found_date, found_time, officer_id, item_category, item_brand, " +
-                 "item_model, item_color, item_serial_number, storage_location, picture_path " +
+                 "item_model, item_color, item_serial_number, storage_location, picture_path, status " +
                  "FROM records ORDER BY id DESC")) {
             
             ResultSet rs = stmt.executeQuery();
@@ -182,6 +182,7 @@ public class AdminApiServlet extends HttpServlet {
                 record.addProperty("item_serial_number", rs.getString("item_serial_number"));
                 record.addProperty("storage_location", rs.getString("storage_location"));
                 record.addProperty("picture_path", rs.getString("picture_path"));
+                record.addProperty("status", rs.getString("status") != null ? rs.getString("status") : "stored");
                 records.add(record);
             }
         }

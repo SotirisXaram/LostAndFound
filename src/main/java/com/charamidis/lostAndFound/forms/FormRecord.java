@@ -999,10 +999,26 @@ public class FormRecord extends Stage {
             try {
                 // Get the web server URL dynamically
                 String baseUrl = getNetworkBaseUrl();
+                String fullUrl = baseUrl + "/public/record/" + selectedRecord.getUid();
                 
                 // Print QR code using the selected record
                 com.charamidis.lostAndFound.utils.BarcodePrinter.printQRCode(selectedRecord, baseUrl);
-                new MessageBoxOk("✅ QR Code printed successfully!\nRecord ID: " + selectedRecord.getId() + "\nUID: " + selectedRecord.getUid() + "\n\nWhen scanned, this QR code will open:\n" + baseUrl + "/public/record/" + selectedRecord.getUid());
+                
+                // Show detailed information about the QR code
+                String message = "✅ QR Code printed successfully!\n\n" +
+                               "Record ID: " + selectedRecord.getId() + "\n" +
+                               "UID: " + selectedRecord.getUid() + "\n\n" +
+                               "QR Code URL: " + fullUrl + "\n\n" +
+                               "📱 Mobile Access:\n" +
+                               "• Make sure your phone is on the same WiFi network\n" +
+                               "• The web server must be running\n" +
+                               "• If it doesn't work, try the IP address manually in your browser\n\n" +
+                               "🔧 Troubleshooting:\n" +
+                               "• Check if the web server is running (port 8080)\n" +
+                               "• Verify your phone and computer are on the same network\n" +
+                               "• Try accessing the admin page first: " + baseUrl + "/admin";
+                
+                new MessageBoxOk(message);
             } catch (Exception e) {
                 new MessageBoxOk("❌ Error printing QR code: " + e.getMessage());
                 e.printStackTrace();
@@ -1014,18 +1030,39 @@ public class FormRecord extends Stage {
     
     private String getNetworkBaseUrl() {
         try {
-            // Try to get the local network IP address
-            java.net.InetAddress localHost = java.net.InetAddress.getLocalHost();
-            String hostAddress = localHost.getHostAddress();
+            // Try to get all network interfaces to find the best local IP
+            java.util.Enumeration<java.net.NetworkInterface> networkInterfaces = 
+                java.net.NetworkInterface.getNetworkInterfaces();
             
-            // Check if it's a local network IP (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
-            if (hostAddress.startsWith("192.168.") || 
-                hostAddress.startsWith("10.") || 
-                (hostAddress.startsWith("172.") && isInPrivateRange(hostAddress))) {
-                return "http://" + hostAddress + ":8080";
+            while (networkInterfaces.hasMoreElements()) {
+                java.net.NetworkInterface networkInterface = networkInterfaces.nextElement();
+                
+                // Skip loopback and inactive interfaces
+                if (networkInterface.isLoopback() || !networkInterface.isUp()) {
+                    continue;
+                }
+                
+                java.util.Enumeration<java.net.InetAddress> addresses = networkInterface.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    java.net.InetAddress address = addresses.nextElement();
+                    
+                    // Skip loopback addresses
+                    if (address.isLoopbackAddress()) {
+                        continue;
+                    }
+                    
+                    String hostAddress = address.getHostAddress();
+                    
+                    // Check if it's a local network IP (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
+                    if (hostAddress.startsWith("192.168.") || 
+                        hostAddress.startsWith("10.") || 
+                        (hostAddress.startsWith("172.") && isInPrivateRange(hostAddress))) {
+                        return "http://" + hostAddress + ":8080";
+                    }
+                }
             }
             
-            // Fallback to localhost if not a private network IP
+            // Fallback to localhost if no suitable network IP found
             return "http://localhost:8080";
         } catch (Exception e) {
             // Fallback to localhost if there's any error

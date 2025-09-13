@@ -91,6 +91,7 @@ public class WebServerManager {
             context.addServlet(new ServletHolder(new AdminDashboardServlet()), "/admin");
             context.addServlet(new ServletHolder(new AdminApiServlet()), "/api/*");
             context.addServlet(new ServletHolder(new PublicRecordServlet()), "/public/record/*");
+            context.addServlet(new ServletHolder(new AppleWalletServlet()), "/wallet/*");
             context.addServlet(new ServletHolder(new StaticFileServlet()), "/*");
             
             server.setHandler(context);

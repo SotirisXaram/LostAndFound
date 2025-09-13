@@ -102,7 +102,19 @@ public class Main extends Application{
                            System.out.println("User found, checking password...");
                            if (BCrypt.checkpw(txtPassword.getText().trim(), hashedPassword)) {
                                System.out.println("Password correct, logging in...");
-                               User user = new User(resultSet.getInt("am"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("date_of_birth"), LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")), resultSet.getString("role"));
+                               // Format date of birth properly
+                               String dateOfBirth = resultSet.getString("date_of_birth");
+                               String formattedDateOfBirth = "";
+                               if (dateOfBirth != null && !dateOfBirth.isEmpty()) {
+                                   try {
+                                       // Convert from YYYY-MM-DD to DD/MM/YYYY
+                                       LocalDate date = LocalDate.parse(dateOfBirth);
+                                       formattedDateOfBirth = date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                                   } catch (Exception ex) {
+                                       formattedDateOfBirth = dateOfBirth; // Use original if parsing fails
+                                   }
+                               }
+                               User user = new User(resultSet.getInt("am"), resultSet.getString("first_name"), resultSet.getString("last_name"), formattedDateOfBirth, LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")), resultSet.getString("role"));
                                MainScreen mainScreen = new MainScreen(connection, user, mainPage);
                                Scene mainScene = mainScreen.getScene();
                                loginPage.setTitle("Lost And Found");

@@ -175,9 +175,9 @@ public class AdminDashboardServlet extends HttpServlet {
             "}\n" +
             "body {\n" +
             "    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n" +
-            "    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n" +
+            "    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);\n" +
             "    min-height: 100vh;\n" +
-            "    color: #333;\n" +
+            "    color: #2c3e50;\n" +
             "}\n" +
             ".container {\n" +
             "    max-width: 1400px;\n" +
@@ -185,35 +185,37 @@ public class AdminDashboardServlet extends HttpServlet {
             "    padding: 20px;\n" +
             "}\n" +
             ".header {\n" +
-            "    background: rgba(255, 255, 255, 0.95);\n" +
-            "    padding: 20px;\n" +
-            "    border-radius: 15px;\n" +
-            "    margin-bottom: 20px;\n" +
-            "    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);\n" +
+            "    background: #ffffff;\n" +
+            "    padding: 25px 30px;\n" +
+            "    border-radius: 12px;\n" +
+            "    margin-bottom: 25px;\n" +
+            "    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);\n" +
+            "    border: 1px solid #e1e8ed;\n" +
             "    display: flex;\n" +
             "    justify-content: space-between;\n" +
             "    align-items: center;\n" +
             "    flex-wrap: wrap;\n" +
             "}\n" +
             ".header h1 {\n" +
-            "    color: #2c3e50;\n" +
-            "    font-size: 2rem;\n" +
-            "    font-weight: 700;\n" +
+            "    color: #1a202c;\n" +
+            "    font-size: 2.2rem;\n" +
+            "    font-weight: 600;\n" +
+            "    letter-spacing: -0.5px;\n" +
             "}\n" +
             ".status-indicator {\n" +
             "    display: flex;\n" +
             "    align-items: center;\n" +
-            "    gap: 10px;\n" +
-            "    padding: 10px 20px;\n" +
-            "    background: #f8f9fa;\n" +
-            "    border-radius: 25px;\n" +
-            "    border: 2px solid #e9ecef;\n" +
+            "    gap: 8px;\n" +
+            "    padding: 8px 16px;\n" +
+            "    background: #f7fafc;\n" +
+            "    border-radius: 20px;\n" +
+            "    border: 1px solid #e2e8f0;\n" +
             "}\n" +
             ".status-dot {\n" +
-            "    width: 12px;\n" +
-            "    height: 12px;\n" +
+            "    width: 10px;\n" +
+            "    height: 10px;\n" +
             "    border-radius: 50%;\n" +
-            "    background: #28a745;\n" +
+            "    background: #48bb78;\n" +
             "    animation: pulse 2s infinite;\n" +
             "}\n" +
             "@keyframes pulse {\n" +
@@ -223,29 +225,33 @@ public class AdminDashboardServlet extends HttpServlet {
             "}\n" +
             ".tabs {\n" +
             "    display: flex;\n" +
-            "    gap: 10px;\n" +
-            "    margin-bottom: 20px;\n" +
-            "    background: rgba(255, 255, 255, 0.1);\n" +
-            "    padding: 10px;\n" +
-            "    border-radius: 10px;\n" +
-            "    backdrop-filter: blur(10px);\n" +
+            "    gap: 8px;\n" +
+            "    margin-bottom: 25px;\n" +
+            "    background: #ffffff;\n" +
+            "    padding: 8px;\n" +
+            "    border-radius: 12px;\n" +
+            "    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);\n" +
+            "    border: 1px solid #e2e8f0;\n" +
             "}\n" +
             ".tab-btn {\n" +
             "    padding: 12px 24px;\n" +
             "    border: none;\n" +
             "    background: transparent;\n" +
-            "    color: white;\n" +
+            "    color: #64748b;\n" +
             "    border-radius: 8px;\n" +
             "    cursor: pointer;\n" +
-            "    font-weight: 600;\n" +
-            "    transition: all 0.3s ease;\n" +
+            "    font-weight: 500;\n" +
+            "    font-size: 14px;\n" +
+            "    transition: all 0.2s ease;\n" +
             "}\n" +
             ".tab-btn:hover {\n" +
-            "    background: rgba(255, 255, 255, 0.2);\n" +
+            "    background: #f1f5f9;\n" +
+            "    color: #334155;\n" +
             "}\n" +
             ".tab-btn.active {\n" +
-            "    background: rgba(255, 255, 255, 0.3);\n" +
-            "    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);\n" +
+            "    background: #3b82f6;\n" +
+            "    color: white;\n" +
+            "    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);\n" +
             "}\n" +
             ".tab-content {\n" +
             "    display: none;\n" +
@@ -260,70 +266,77 @@ public class AdminDashboardServlet extends HttpServlet {
             "    margin-bottom: 20px;\n" +
             "}\n" +
             ".card {\n" +
-            "    background: rgba(255, 255, 255, 0.95);\n" +
-            "    padding: 20px;\n" +
-            "    border-radius: 15px;\n" +
-            "    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);\n" +
-            "    backdrop-filter: blur(10px);\n" +
+            "    background: #ffffff;\n" +
+            "    padding: 24px;\n" +
+            "    border-radius: 12px;\n" +
+            "    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);\n" +
+            "    border: 1px solid #e2e8f0;\n" +
             "}\n" +
             ".card h3 {\n" +
-            "    color: #2c3e50;\n" +
-            "    margin-bottom: 15px;\n" +
-            "    font-size: 1.2rem;\n" +
+            "    color: #1e293b;\n" +
+            "    margin-bottom: 16px;\n" +
+            "    font-size: 1.25rem;\n" +
+            "    font-weight: 600;\n" +
             "}\n" +
             ".search-container {\n" +
-            "    background: rgba(255, 255, 255, 0.95);\n" +
-            "    padding: 20px;\n" +
-            "    border-radius: 15px;\n" +
-            "    margin-bottom: 20px;\n" +
-            "    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);\n" +
+            "    background: #ffffff;\n" +
+            "    padding: 24px;\n" +
+            "    border-radius: 12px;\n" +
+            "    margin-bottom: 25px;\n" +
+            "    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);\n" +
+            "    border: 1px solid #e2e8f0;\n" +
             "    display: flex;\n" +
-            "    gap: 10px;\n" +
+            "    gap: 12px;\n" +
             "    align-items: center;\n" +
             "    flex-wrap: wrap;\n" +
             "}\n" +
             ".search-input {\n" +
             "    flex: 1;\n" +
             "    padding: 12px 16px;\n" +
-            "    border: 2px solid #e9ecef;\n" +
+            "    border: 1px solid #d1d5db;\n" +
             "    border-radius: 8px;\n" +
-            "    font-size: 16px;\n" +
+            "    font-size: 14px;\n" +
             "    min-width: 300px;\n" +
+            "    background: #ffffff;\n" +
+            "    color: #374151;\n" +
             "}\n" +
             ".search-input:focus {\n" +
             "    outline: none;\n" +
-            "    border-color: #007bff;\n" +
-            "    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);\n" +
+            "    border-color: #3b82f6;\n" +
+            "    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);\n" +
             "}\n" +
             ".table-container {\n" +
-            "    background: rgba(255, 255, 255, 0.95);\n" +
-            "    border-radius: 15px;\n" +
-            "    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);\n" +
+            "    background: #ffffff;\n" +
+            "    border-radius: 12px;\n" +
+            "    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);\n" +
             "    overflow: hidden;\n" +
-            "    margin-bottom: 20px;\n" +
+            "    margin-bottom: 25px;\n" +
+            "    border: 1px solid #e2e8f0;\n" +
             "}\n" +
             ".data-table {\n" +
             "    width: 100%;\n" +
             "    border-collapse: collapse;\n" +
             "}\n" +
             ".data-table th {\n" +
-            "    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n" +
-            "    color: white;\n" +
-            "    padding: 15px 12px;\n" +
+            "    background: #f8fafc;\n" +
+            "    color: #374151;\n" +
+            "    padding: 16px 12px;\n" +
             "    text-align: left;\n" +
             "    font-weight: 600;\n" +
             "    font-size: 14px;\n" +
+            "    border-bottom: 2px solid #e2e8f0;\n" +
             "}\n" +
             ".data-table td {\n" +
-            "    padding: 12px;\n" +
-            "    border-bottom: 1px solid #e9ecef;\n" +
+            "    padding: 16px 12px;\n" +
+            "    border-bottom: 1px solid #f1f5f9;\n" +
             "    font-size: 14px;\n" +
+            "    color: #374151;\n" +
             "}\n" +
             ".data-table tbody tr:hover {\n" +
-            "    background-color: #f8f9fa;\n" +
+            "    background-color: #f8fafc;\n" +
             "}\n" +
             ".data-table tbody tr:nth-child(even) {\n" +
-            "    background-color: #f8f9fa;\n" +
+            "    background-color: #fafbfc;\n" +
             "}\n" +
             ".status-badge {\n" +
             "    padding: 4px 8px;\n" +
@@ -336,9 +349,17 @@ public class AdminDashboardServlet extends HttpServlet {
             "    background: #d4edda;\n" +
             "    color: #155724;\n" +
             "}\n" +
+            ".status-stored {\n" +
+            "    background: #d4edda;\n" +
+            "    color: #155724;\n" +
+            "}\n" +
             ".status-returned {\n" +
             "    background: #cce5ff;\n" +
             "    color: #004085;\n" +
+            "}\n" +
+            ".status-disposed {\n" +
+            "    background: #f8d7da;\n" +
+            "    color: #721c24;\n" +
             "}\n" +
             ".status-pending {\n" +
             "    background: #fff3cd;\n" +
@@ -376,28 +397,37 @@ public class AdminDashboardServlet extends HttpServlet {
             "    display: inline-block;\n" +
             "}\n" +
             ".btn-primary {\n" +
-            "    background: linear-gradient(135deg, #007bff, #0056b3);\n" +
+            "    background: #3b82f6;\n" +
             "    color: white;\n" +
+            "    border: 1px solid #3b82f6;\n" +
             "}\n" +
             ".btn-primary:hover {\n" +
-            "    transform: translateY(-2px);\n" +
-            "    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);\n" +
+            "    background: #2563eb;\n" +
+            "    border-color: #2563eb;\n" +
+            "    transform: translateY(-1px);\n" +
+            "    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);\n" +
             "}\n" +
             ".btn-secondary {\n" +
-            "    background: linear-gradient(135deg, #6c757d, #545b62);\n" +
+            "    background: #6b7280;\n" +
             "    color: white;\n" +
+            "    border: 1px solid #6b7280;\n" +
             "}\n" +
             ".btn-secondary:hover {\n" +
-            "    transform: translateY(-2px);\n" +
-            "    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);\n" +
+            "    background: #4b5563;\n" +
+            "    border-color: #4b5563;\n" +
+            "    transform: translateY(-1px);\n" +
+            "    box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);\n" +
             "}\n" +
             ".btn-success {\n" +
-            "    background: linear-gradient(135deg, #28a745, #1e7e34);\n" +
+            "    background: #10b981;\n" +
             "    color: white;\n" +
+            "    border: 1px solid #10b981;\n" +
             "}\n" +
             ".btn-success:hover {\n" +
-            "    transform: translateY(-2px);\n" +
-            "    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);\n" +
+            "    background: #059669;\n" +
+            "    border-color: #059669;\n" +
+            "    transform: translateY(-1px);\n" +
+            "    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);\n" +
             "}\n" +
             "@media (max-width: 768px) {\n" +
             "    .container {\n" +
@@ -500,11 +530,30 @@ public class AdminDashboardServlet extends HttpServlet {
             "        });\n" +
             "}\n" +
             "\n" +
+            "function getStatusClass(status) {\n" +
+            "    switch(status) {\n" +
+            "        case 'stored': return 'status-stored';\n" +
+            "        case 'returned': return 'status-returned';\n" +
+            "        case 'disposed': return 'status-disposed';\n" +
+            "        default: return 'status-stored';\n" +
+            "    }\n" +
+            "}\n" +
+            "\n" +
+            "function getStatusText(status) {\n" +
+            "    switch(status) {\n" +
+            "        case 'stored': return 'Stored';\n" +
+            "        case 'returned': return 'Returned';\n" +
+            "        case 'disposed': return 'Disposed';\n" +
+            "        default: return 'Stored';\n" +
+            "    }\n" +
+            "}\n" +
+            "\n" +
             "function displayRecords(records) {\n" +
             "    const tbody = document.getElementById('recordsTableBody');\n" +
             "    tbody.innerHTML = '';\n" +
             "    \n" +
             "    records.forEach(record => {\n" +
+            "        const status = record.status || 'stored';\n" +
             "        const row = document.createElement('tr');\n" +
             "        row.innerHTML = `\n" +
             "            <td>${record.id}</td>\n" +
@@ -512,7 +561,7 @@ public class AdminDashboardServlet extends HttpServlet {
             "            <td>${record.founder_first_name} ${record.founder_last_name}</td>\n" +
             "            <td>${record.item_description || 'N/A'}</td>\n" +
             "            <td>${record.found_location}</td>\n" +
-            "            <td><span class=\"status-badge status-active\">Active</span></td>\n" +
+            "            <td><span class=\"status-badge ${getStatusClass(status)}\">${getStatusText(status)}</span></td>\n" +
             "        `;\n" +
             "        tbody.appendChild(row);\n" +
             "    });\n" +

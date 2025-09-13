@@ -133,7 +133,7 @@ public class ReturnsShow {
         searchSection.setPadding(new Insets(10, 0, 20, 0));
         
         TextField searchField = new TextField();
-        searchField.setPromptText("Search by name, phone, ID, address, date...");
+        searchField.setPromptText("Search by ID, name, phone, address, date...");
         searchField.setPrefWidth(350);
         searchField.setPrefHeight(35);
         searchField.setStyle("-fx-background-color: white; -fx-border-color: #dee2e6; -fx-border-width: 1; -fx-border-radius: 5; -fx-padding: 8 12; -fx-font-size: 14;");
@@ -196,6 +196,7 @@ public class ReturnsShow {
         }
         
         String searchQuery = "SELECT * FROM returns WHERE " +
+                           "CAST(id AS TEXT) LIKE ? OR " +
                            "return_last_name LIKE ? OR " +
                            "return_first_name LIKE ? OR " +
                            "return_telephone LIKE ? OR " +
@@ -218,7 +219,7 @@ public class ReturnsShow {
             // Set search parameters if provided
             if (searchTerms.length > 0) {
                 String searchPattern = "%" + searchTerms[0] + "%";
-                for (int i = 0; i < 10; i++) { // 10 search fields (excluding comment)
+                for (int i = 0; i < 11; i++) { // 11 search fields (including ID, excluding comment)
                     stmt.setString(i + 1, searchPattern);
                 }
             }

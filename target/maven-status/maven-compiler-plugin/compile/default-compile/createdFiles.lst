@@ -18,6 +18,7 @@ com/charamidis/lostAndFound/web/WebServerManager.class
 com/charamidis/lostAndFound/forms/ResetId.class
 com/charamidis/lostAndFound/states/EnumFormState.class
 com/charamidis/lostAndFound/utils/QRCodeGenerator.class
+com/charamidis/lostAndFound/web/AppleWalletServlet.class
 com/charamidis/lostAndFound/forms/DeleteReturn.class
 com/charamidis/lostAndFound/forms/ModernSearchForm.class
 com/charamidis/lostAndFound/utils/Resources.class
@@ -38,6 +39,7 @@ com/charamidis/lostAndFound/pages/MainScreen.class
 com/charamidis/lostAndFound/utils/ConnectionStatusIndicator$1.class
 com/charamidis/lostAndFound/forms/FormRecord.class
 com/charamidis/lostAndFound/exporters/CsvExporter.class
+com/charamidis/lostAndFound/utils/NetworkTest.class
 com/charamidis/lostAndFound/utils/ImageManager.class
 com/charamidis/lostAndFound/utils/AutoBackupManager$1.class
 com/charamidis/lostAndFound/forms/AddUser.class
@@ -50,5 +52,7 @@ com/charamidis/lostAndFound/utils/StatisticsManager$StatisticsListener.class
 com/charamidis/lostAndFound/utils/DataSeeder.class
 com/charamidis/lostAndFound/utils/ConnectionStatusIndicator$Status.class
 com/charamidis/lostAndFound/utils/Database.class
+com/charamidis/lostAndFound/utils/AppleWalletPassGenerator.class
 com/charamidis/lostAndFound/utils/SqliteDatabaseInitializer.class
+com/charamidis/lostAndFound/pages/ReturnsShow$1.class
 com/charamidis/lostAndFound/utils/AppLogger.class
