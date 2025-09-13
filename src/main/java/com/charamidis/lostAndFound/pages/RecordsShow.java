@@ -416,6 +416,7 @@ public class RecordsShow {
                 
                 Record record = new Record(
                         resultSet.getInt("id"),
+                        resultSet.getString("uid"),
                     recordDate,
                     recordTime,
                         resultSet.getInt("officer_id"),
@@ -428,10 +429,8 @@ public class RecordsShow {
                         resultSet.getString("founder_father_name"),
                         resultSet.getString("founder_area_inhabitant"),
                     // Handle date parsing safely
-                    resultSet.getString("found_date") != null ? 
-                        java.sql.Date.valueOf(resultSet.getString("found_date")) : null,
-                    resultSet.getString("found_time") != null ? 
-                        java.sql.Time.valueOf(resultSet.getString("found_time")) : null,
+                    resultSet.getString("found_date"),
+                    resultSet.getString("found_time"),
                         resultSet.getString("found_location"),
                     resultSet.getString("item_description"),
                     resultSet.getString("item_category"),
@@ -439,7 +438,9 @@ public class RecordsShow {
                     resultSet.getString("item_model"),
                     resultSet.getString("item_color"),
                     resultSet.getString("item_serial_number"),
+                    resultSet.getString("item_other_details"),
                     resultSet.getString("storage_location"),
+                    resultSet.getString("status"),
                     resultSet.getString("picture_path")
                 );
                 allRecords.add(record);
@@ -528,10 +529,7 @@ public class RecordsShow {
                 tv.getItems().remove(selected);
                 updateStatus("Record #" + selected.getId() + " deleted successfully");
                 
-                // Broadcast to web dashboard
-                WebServerManager.broadcastRecordChange("DELETED", 
-                    String.valueOf(selected.getId()), 
-                    "Record deleted: " + selected.getItem_description());
+                // WebSocket broadcast removed
             } catch (SQLException ex) {
                 showAlert("Error deleting record: " + ex.getMessage());
             }

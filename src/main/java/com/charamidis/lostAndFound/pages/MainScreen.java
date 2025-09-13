@@ -12,6 +12,7 @@ import com.charamidis.lostAndFound.utils.AppLogger;
 import com.charamidis.lostAndFound.utils.Database;
 import com.charamidis.lostAndFound.utils.MessageBoxOk;
 import com.charamidis.lostAndFound.utils.Resources;
+import com.charamidis.lostAndFound.utils.StatisticsManager;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -209,9 +210,8 @@ public class MainScreen {
         }
 
 
-        // Create main container
-        VBox mainContainer = new VBox();
-        mainContainer.setSpacing(0);
+        // Create main container using BorderPane for better layout control
+        BorderPane mainContainer = new BorderPane();
         mainContainer.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
         // Header section
@@ -244,31 +244,21 @@ public class MainScreen {
         statsSection.setSpacing(30);
         statsSection.setAlignment(Pos.CENTER_RIGHT);
         
-        // Get quick stats from database
-        try {
-            Statement stmt = finalConn.createStatement();
-            
-            // Total records
-            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) as total FROM records");
-            int totalRecords = rs.next() ? rs.getInt("total") : 0;
-            
-            // Pending returns
-            rs = stmt.executeQuery("SELECT COUNT(*) as pending FROM records r LEFT JOIN returns ret ON r.id = ret.id WHERE ret.id IS NULL");
-            int pendingReturns = rs.next() ? rs.getInt("pending") : 0;
-            
-            // This month records
-            rs = stmt.executeQuery("SELECT COUNT(*) as thisMonth FROM records WHERE strftime('%Y-%m', record_datetime) = strftime('%Y-%m', 'now')");
-            int thisMonthRecords = rs.next() ? rs.getInt("thisMonth") : 0;
-            
-            VBox totalRecordsBox = createStatBox("Σύνολο Εγγραφών", String.valueOf(totalRecords), Color.rgb(46, 204, 113));
-            VBox pendingBox = createStatBox("Εκκρεμείς", String.valueOf(pendingReturns), Color.rgb(241, 196, 15));
-            VBox monthlyBox = createStatBox("Αυτό το Μήνα", String.valueOf(thisMonthRecords), Color.rgb(52, 152, 219));
-            
-            statsSection.getChildren().addAll(totalRecordsBox, pendingBox, monthlyBox);
-            
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error getting statistics", e);
-        }
+        // Create statistics boxes with placeholders
+        VBox totalRecordsBox = createStatBox("Σύνολο Εγγραφών", "0", Color.rgb(46, 204, 113));
+        VBox totalReturnsBox = createStatBox("Επιστροφές", "0", Color.rgb(52, 152, 219));
+        VBox todayBox = createStatBox("Σήμερα", "0", Color.rgb(241, 196, 15));
+        
+        statsSection.getChildren().addAll(totalRecordsBox, totalReturnsBox, todayBox);
+        
+        // Initialize and setup statistics manager
+        StatisticsManager statsManager = StatisticsManager.getInstance(finalConn);
+        statsManager.addListener((totalRecords, totalReturns, todayRecords, todayReturns) -> {
+            // Update the statistics boxes
+            updateStatBox(totalRecordsBox, String.valueOf(totalRecords));
+            updateStatBox(totalReturnsBox, String.valueOf(totalReturns));
+            updateStatBox(todayBox, String.valueOf(todayRecords + todayReturns));
+        });
 
         header.getChildren().addAll(welcomeSection, statsSection);
         HBox.setHgrow(welcomeSection, Priority.ALWAYS);
@@ -301,7 +291,11 @@ public class MainScreen {
         searchBtn.setOnAction(e -> new ModernSearchForm(finalConn));
 
         Button newRecordBtn = createActionButton("Νέα Εγγραφή", "Δημιουργία νέας εγγραφής", "open-book.png", Color.rgb(231, 76, 60));
-        newRecordBtn.setOnAction(e -> new FormRecord(finalConn, user)); // Same as menubar
+        newRecordBtn.setOnAction(e -> {
+            FormRecord formRecord = new FormRecord(finalConn, user);
+            // Automatically trigger new record action to enter edit mode
+            formRecord.newAction();
+        });
 
         Button statisticsBtn = createActionButton("Στατιστικά", "Προβολή στατιστικών", "paper.png", Color.rgb(241, 196, 15));
         statisticsBtn.setOnAction(e -> new StatisticsDashboard(finalConn)); // Same as menubar
@@ -334,17 +328,21 @@ public class MainScreen {
 
         contentArea.getChildren().add(actionGrid);
 
-        // Footer
+        // Footer - Fixed at bottom
         HBox footer = new HBox();
-        footer.setPadding(new Insets(20, 30, 20, 30));
+        footer.setPadding(new Insets(15, 30, 15, 30));
         footer.setBackground(new Background(new BackgroundFill(Color.rgb(236, 240, 241), CornerRadii.EMPTY, Insets.EMPTY)));
         footer.setAlignment(Pos.CENTER);
+        footer.setStyle("-fx-border-color: #bdc3c7; -fx-border-width: 1 0 0 0;");
         
         Text footerText = new Text("Lost & Found Management System v2.0.1");
         footerText.setStyle("-fx-font-size: 12px; -fx-fill: #7f8c8d;");
         footer.getChildren().add(footerText);
 
-        mainContainer.getChildren().addAll(menuBar, header, contentArea, footer);
+        // Set up BorderPane layout
+        mainContainer.setTop(menuBar);
+        mainContainer.setCenter(new VBox(header, contentArea));
+        mainContainer.setBottom(footer);
 
         scene = new Scene(mainContainer);
 
@@ -367,6 +365,7 @@ public class MainScreen {
         Text valueText = new Text(value);
         valueText.setFill(Color.WHITE);
         valueText.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        valueText.setUserData("valueText"); // Store reference for updates
 
         Text titleText = new Text(title);
         titleText.setFill(Color.WHITE);
@@ -374,6 +373,16 @@ public class MainScreen {
 
         statBox.getChildren().addAll(valueText, titleText);
         return statBox;
+    }
+    
+    private void updateStatBox(VBox statBox, String newValue) {
+        // Find the value text and update it
+        for (var child : statBox.getChildren()) {
+            if (child instanceof Text && "valueText".equals(child.getUserData())) {
+                ((Text) child).setText(newValue);
+                break;
+            }
+        }
     }
 
     private Button createActionButton(String title, String description, String iconName, Color color) {

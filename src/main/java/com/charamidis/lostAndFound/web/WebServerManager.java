@@ -1,6 +1,7 @@
 package com.charamidis.lostAndFound.web;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 // WebSocket configuration will be simplified
@@ -28,8 +29,11 @@ public class WebServerManager {
 
     public static void initialize() {
         loadConfiguration();
+        System.out.println("🌐 Web Server Configuration: enabled=" + isEnabled + ", port=" + port);
         if (isEnabled) {
             startWebServer();
+        } else {
+            System.out.println("🌐 Web Server is disabled in configuration");
         }
     }
 
@@ -63,20 +67,30 @@ public class WebServerManager {
 
     public static void startWebServer() {
         if (server != null && server.isRunning()) {
+            System.out.println("🌐 Web Server is already running");
             return;
         }
         
+        System.out.println("🌐 Starting Web Server on port " + port + "...");
         try {
-            server = new Server(port);
+            // Create server first
+            server = new Server();
+            
+            // Configure server to bind to all interfaces (0.0.0.0) instead of just localhost
+            ServerConnector connector = new ServerConnector(server);
+            connector.setPort(port);
+            connector.setHost("0.0.0.0"); // Bind to all interfaces
+            
+            server.addConnector(connector);
+            
             ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
             context.setContextPath("/");
             
-            // WebSocket support will be added later
-            // For now, we'll use a simpler approach
             
             // Add servlets
             context.addServlet(new ServletHolder(new AdminDashboardServlet()), "/admin");
             context.addServlet(new ServletHolder(new AdminApiServlet()), "/api/*");
+            context.addServlet(new ServletHolder(new PublicRecordServlet()), "/public/record/*");
             context.addServlet(new ServletHolder(new StaticFileServlet()), "/*");
             
             server.setHandler(context);
@@ -157,34 +171,12 @@ public class WebServerManager {
         scheduler.scheduleAtFixedRate(() -> {
             if (isEnabled && server != null && server.isRunning()) {
                 // Send periodic status updates
-                AdminWebSocket.broadcastSystemAlert("status", "System running normally");
+                // System status broadcast removed
             }
         }, 0, 30, TimeUnit.SECONDS);
     }
 
-    public static void broadcastRecordChange(String action, String recordId, String details) {
-        if (isEnabled) {
-            AdminWebSocket.broadcastRecordChange(action, recordId, details);
-        }
-    }
-
-    public static void broadcastUserActivity(String user, String activity, String details) {
-        if (isEnabled) {
-            AdminWebSocket.broadcastUserActivity(user, activity, details);
-        }
-    }
-
-    public static void broadcastSystemAlert(String alertType, String message) {
-        if (isEnabled) {
-            AdminWebSocket.broadcastSystemAlert(alertType, message);
-        }
-    }
-
-    public static void broadcastActivity(String user, String action, String details) {
-        if (isEnabled) {
-            AdminWebSocket.broadcastActivity(user, action, details);
-        }
-    }
+    // WebSocket broadcast methods removed - functionality not implemented
 
     private static void displayNetworkInfo() {
         try {

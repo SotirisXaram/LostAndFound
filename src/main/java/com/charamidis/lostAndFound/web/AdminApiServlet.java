@@ -129,6 +129,19 @@ public class AdminApiServlet extends HttpServlet {
                 stats.addProperty("recordsThisMonth", rs.getInt(1));
             }
             
+            // Total returns
+            try (PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM returns")) {
+                ResultSet rs = stmt.executeQuery();
+                stats.addProperty("totalReturns", rs.getInt(1));
+            }
+            
+            // Returns this month
+            try (PreparedStatement stmt = conn.prepareStatement(
+                "SELECT COUNT(*) FROM returns WHERE strftime('%Y-%m', return_date) = strftime('%Y-%m', 'now')")) {
+                ResultSet rs = stmt.executeQuery();
+                stats.addProperty("returnsThisMonth", rs.getInt(1));
+            }
+            
             // Total users
             try (PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM users")) {
                 ResultSet rs = stmt.executeQuery();
@@ -155,9 +168,9 @@ public class AdminApiServlet extends HttpServlet {
                 JsonObject record = new JsonObject();
                 record.addProperty("id", rs.getInt("id"));
                 record.addProperty("record_date", rs.getString("record_datetime"));
-                record.addProperty("founder_first_name", rs.getString("founder_first_name"));
-                record.addProperty("founder_last_name", rs.getString("founder_last_name"));
-                record.addProperty("item_description", rs.getString("item_description"));
+                record.addProperty("founder_first_name", rs.getString("founder_first_name") != null ? rs.getString("founder_first_name") : "");
+                record.addProperty("founder_last_name", rs.getString("founder_last_name") != null ? rs.getString("founder_last_name") : "");
+                record.addProperty("item_description", rs.getString("item_description") != null ? rs.getString("item_description") : "");
                 record.addProperty("found_location", rs.getString("found_location"));
                 record.addProperty("found_date", rs.getString("found_date"));
                 record.addProperty("found_time", rs.getString("found_time"));
@@ -181,22 +194,29 @@ public class AdminApiServlet extends HttpServlet {
         
         try (Connection conn = SqliteDatabaseInitializer.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
-                 "SELECT r.id, r.return_date, r.claimant_name, r.claimant_id, r.claimant_phone, " +
-                 "r.item_description, r.officer_name, r.return_reason, r.notes " +
-                 "FROM returns r ORDER BY r.return_date DESC")) {
+                 "SELECT r.id, r.return_date, r.return_time, r.return_first_name, r.return_last_name, " +
+                 "r.return_telephone, r.return_id_number, r.return_father_name, r.return_date_of_birth, " +
+                 "r.return_street_address, r.return_street_number, r.return_timestamp, r.comment, " +
+                 "r.return_officer, rec.item_description, u.first_name || ' ' || u.last_name as officer_name " +
+                 "FROM returns r " +
+                 "LEFT JOIN records rec ON r.record_id = rec.id " +
+                 "LEFT JOIN users u ON r.return_officer = u.am " +
+                 "ORDER BY r.return_timestamp DESC")) {
             
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 JsonObject returnItem = new JsonObject();
                 returnItem.addProperty("id", rs.getInt("id"));
                 returnItem.addProperty("return_date", rs.getString("return_date"));
-                returnItem.addProperty("claimant_name", rs.getString("claimant_name"));
-                returnItem.addProperty("claimant_id", rs.getString("claimant_id"));
-                returnItem.addProperty("claimant_phone", rs.getString("claimant_phone"));
-                returnItem.addProperty("item_description", rs.getString("item_description"));
+                returnItem.addProperty("return_time", rs.getString("return_time"));
+                returnItem.addProperty("claimant_name", rs.getString("return_first_name") + " " + rs.getString("return_last_name"));
+                returnItem.addProperty("claimant_id", rs.getString("return_id_number"));
+                returnItem.addProperty("claimant_phone", rs.getString("return_telephone"));
+                returnItem.addProperty("item_description", rs.getString("item_description") != null ? rs.getString("item_description") : "");
                 returnItem.addProperty("officer_name", rs.getString("officer_name"));
-                returnItem.addProperty("return_reason", rs.getString("return_reason"));
-                returnItem.addProperty("notes", rs.getString("notes"));
+                returnItem.addProperty("return_reason", rs.getString("comment"));
+                returnItem.addProperty("notes", rs.getString("comment"));
+                returnItem.addProperty("return_timestamp", rs.getString("return_timestamp"));
                 returns.add(returnItem);
             }
         } catch (SQLException e) {
@@ -278,7 +298,7 @@ public class AdminApiServlet extends HttpServlet {
             while (rs.next()) {
                 JsonObject record = new JsonObject();
                 record.addProperty("id", rs.getInt("id"));
-                record.addProperty("description", rs.getString("item_description"));
+                record.addProperty("description", rs.getString("item_description") != null ? rs.getString("item_description") : "");
                 record.addProperty("date", rs.getString("found_date"));
                 record.addProperty("time", rs.getString("found_time"));
                 record.addProperty("founder", rs.getString("founder_first_name") + " " + rs.getString("founder_last_name"));

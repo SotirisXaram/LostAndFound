@@ -34,19 +34,28 @@ public class ContentsPage {
 
         Text homeText = new Text(
                 "" +
-                        "Welcome to Lost And Found\n" +
+                        "Lost & Found Management System v2.0\n" +
                         "\n" +
-                        "Thank you for using the Lost And Found app! This app is designed to help you manage lost items at the lost and found office's efficiently. Here's what you can do with the app:\n" +
+                        "Welcome to the comprehensive Lost & Found Management System. This professional application streamlines the management of lost and found items with advanced features and modern technology.\n" +
                         "\n" +
-                        "-Manage Lost Items (Records): Easily report and track lost items. If you find a lost item, you can also report it to help reunite it with its owner.\n" +
-                        "- Statistics: View detailed statistics about lost and found items to understand trends and improve the management process.\n" +
-                        "- Backup Data: Ensure all your data is safely backed up and easily accessible when needed.\n" +
-                        "- Print BARCODE for each record using unique code\n"+
-                        "- Search for lost items based on date, time, id, description, worker etc..\n"+
-                        "\n" +" Language Translation\n" +
+                        "Key Features:\n" +
+                        "• Complete Record Management: Create, edit, and track lost items with detailed information\n" +
+                        "• Digital Asset Management: Attach and manage photos of lost items\n" +
+                        "• Advanced Search & Filtering: Find records quickly using multiple criteria\n" +
+                        "• Return Processing: Streamlined item return workflow with validation\n" +
+                        "• Barcode & QR Code Generation: Unique identification for each item\n" +
+                        "• Real-time Statistics: Live dashboard with comprehensive analytics\n" +
+                        "• Web Dashboard: Access system remotely via web interface\n" +
+                        "• Data Export: Multiple export formats (Excel, CSV, Binary)\n" +
+                        "• Automated Backup: Secure data protection and recovery\n" +
+                        "• User Management: Role-based access control\n" +
                         "\n" +
-                        "Our Lost And Found app can be translated into any language to suit your needs. If you require the app in a different language, please contact our support team.\n"+
-                        "Navigate through the tabs to explore the app's features and manage lost items with ease."
+                        "System Requirements:\n" +
+                        "• Java 11 or higher\n" +
+                        "• SQLite database\n" +
+                        "• Network access for web features\n" +
+                        "\n" +
+                        "Navigate through the tabs to explore all features and maximize your efficiency."
         );
         homeText.setWrappingWidth(400);
         VBox homeContent = new VBox(homeText);
@@ -56,78 +65,161 @@ public class ContentsPage {
         //STATISTICS TAB
 
         Text statisticsText = new Text("" +
-                "Statistics: \n" +
+                "Analytics & Reporting\n" +
                 "\n" +
-                "Our Lost And Found app provides comprehensive statistics to help you manage lost items effectively:\n" +
+                "The system provides comprehensive analytics and real-time reporting capabilities:\n" +
                 "\n" +
-                "- Annual Statistics:  Access statistics for lost items and their returns over the past year. This includes data on the number of items lost each month.\n" +
-                "  \n" +
-                "- User Statistics:  View statistics related to user activity. Track the number of records each user has made over the last month.\n" +
+                "Dashboard Metrics:\n" +
+                "• Total Records: Complete count of all lost items in the system\n" +
+                "• Return Statistics: Track successful item returns and return rates\n" +
+                "• Daily Activity: Monitor real-time daily operations and trends\n" +
+                "• Monthly Analytics: Analyze patterns and seasonal variations\n" +
+                "• Status Tracking: Monitor item status distribution (stored, returned, disposed)\n" +
                 "\n" +
-                "These statistics are designed to give you valuable insights and help improve the efficiency of lost item management .");
+                "Real-time Updates:\n" +
+                "• Live Statistics: All metrics update automatically without system restart\n" +
+                "• Instant Notifications: Immediate updates when records are created or modified\n" +
+                "• Performance Monitoring: Track system efficiency and user activity\n" +
+                "\n" +
+                "Export Capabilities:\n" +
+                "• Excel Reports: Detailed spreadsheets for analysis\n" +
+                "• CSV Data: Raw data export for external analysis\n" +
+                "• Binary Backup: Complete system backup for data protection\n" +
+                "\n" +
+                "These insights enable data-driven decision making and operational optimization.");
         VBox statisticsContent = new VBox(statisticsText);
         statisticsText.setWrappingWidth(400);
         statisticsContent.setAlignment(Pos.CENTER);
 
-        Text recordsText = new Text("Managing Records\n" +
+        Text recordsText = new Text("Record Management System\n" +
                 "\n" +
-                "As a registered user (added by an admin), you can manage records for lost items efficiently. Follow these steps:\n" +
+                "Comprehensive workflow for managing lost and found items with advanced features:\n" +
                 "\n" +
-                "1. Creating a Record:\n" +
-                "   - Go to the “MANAGE”-“ΔΙΑΧΕΙΡHΣΗ” tab. (or press Ctrl + Shift + E) \n" +
-                "   - Click on “+”\n" +
-                "   - Fill in the required details about the lost item (description, location, date, etc.).\n" +
-                "   - The user's information is automatically captured.\n" +
-                "   - Click \"Save” to create the record.\n" +
+                "Creating Records:\n" +
+                "• Access via MANAGE menu or Ctrl+Shift+E shortcut\n" +
+                "• Click 'New Record' to start the creation process\n" +
+                "• Complete all required fields with validation\n" +
+                "• Attach photos for visual identification\n" +
+                "• Auto-population of officer information\n" +
+                "• Real-time form validation (date/time formats)\n" +
                 "\n" +
-                "2. Returning an Item:\n" +
-                "   - Select the item from the records list.\n" +
-                "   - Click \"Return Item.\" - “ΕΠΙΣΤΡΟΦΗ”\n" +
-                "   - Enter the details of the person claiming the item.\n" +
-                "   - Add any comments if necessary.\n" +
-                "   - Click “SAVE” to complete the process.\n" +
-                "   \n" +
+                "Return Processing:\n" +
+                "• Select record and click 'Return Item'\n" +
+                "• Complete claimant information with validation\n" +
+                "• Date format validation (DD/MM/YYYY)\n" +
+                "• Automatic status update to 'returned'\n" +
+                "• Prevention of duplicate returns\n" +
+                "• Complete audit trail maintenance\n" +
                 "\n" +
-                "3. Printing the Barcode:\n" +
-                "   - Select the item from the list.\n" +
-                "   - Press `Ctrl + Shift + B` to print the barcode for the item.\n" +
+                "Identification & Tracking:\n" +
+                "• Unique barcode generation for each record\n" +
+                "• QR code creation for public access\n" +
+                "• Mobile-accessible QR codes\n" +
+                "• Barcode-based search functionality\n" +
+                "• UUID-based unique identification\n" +
                 "\n" +
-                "4. Printing the Receipt:\n" +
-                "   - Select the record from the list.\n" +
-                "   - Click \"Print.\"\n" +
-                "   - The receipt verifies that the item was handed over to the office.\n" +
-                "   - This receipt should be printed and signed by both the person who found the item and the worker handling the item.\n" +
+                "Search & Filtering:\n" +
+                "• Advanced search across all fields\n" +
+                "• Real-time filtering capabilities\n" +
+                "• Multiple search criteria support\n" +
+                "• Barcode/QR code search\n" +
+                "• Date range filtering\n" +
                 "\n" +
-                "5.Save files\n" +
-                "  -All files (barcodes, receipts etc..) are save in the Desktop in the folder export_data that the app is make .\n" +
+                "Data Management:\n" +
+                "• Multiple export formats (Excel, CSV, Binary)\n" +
+                "• Automated backup system\n" +
+                "• Data integrity validation\n" +
+                "• Cross-platform compatibility\n" +
+                "• Secure data storage\n" +
                 "\n" +
+                "Web Integration:\n" +
+                "• Remote access via web dashboard\n" +
+                "• Mobile-friendly interface\n" +
+                "• Public record viewing via QR codes\n" +
+                "• Real-time data synchronization\n" +
+                "• Network accessibility\n" +
                 "\n" +
+                "User Management:\n" +
+                "• Role-based access control\n" +
+                "• Admin user management\n" +
+                "• Activity logging and tracking\n" +
+                "• Secure authentication\n" +
+                "• Permission management\n" +
                 "\n" +
-                "These steps help ensure that all lost items are properly recorded and managed, making it easier to return them to their rightful owners.\n");
+                "System Features:\n" +
+                "• Real-time statistics updates\n" +
+                "• Form validation and error handling\n" +
+                "• Image management and compression\n" +
+                "• Keyboard shortcuts for efficiency\n" +
+                "• Professional UI/UX design\n" +
+                "\n" +
+                "All files are automatically saved to Desktop/export_data folder for easy access and organization.");
         VBox recordsContent = new VBox(recordsText);
         recordsText.setWrappingWidth(400);
         recordsContent.setAlignment(Pos.CENTER);
 
         //Disclaimer Tab
-        Text text = new Text("Disclaimer:\n" +
-                "This application is provided \"as is\" without any representations or warranties, express or implied. The creators of this application make no representations or warranties regarding this application or the information and materials provided within it.\n" +
-                "While we strive to ensure the accuracy, reliability, and completeness of the information and materials provided by this application, we cannot guarantee that they will always be up-to-date, accurate, or error-free. The use of this application and the information contained within it is at your own risk.\n" +
-                "We disclaim all liability for any loss or damage arising from the use of, or reliance on, this application or any information or materials provided within it. This includes, but is not limited to, direct, indirect, consequential, or incidental loss or damage, whether arising from negligence, breach of contract, or otherwise, even if foreseeable.\n" +
-                "We also reserve the right to modify, suspend, or discontinue any aspect of this application at any time, including its functionality, features, or availability, without notice or liability.\n" +
-                "By using this application, you acknowledge and agree to the terms of this disclaimer. If you do not agree with these terms, please refrain from using this application.\n" +
+        Text text = new Text("Terms of Use & Disclaimer\n" +
                 "\n" +
-                "This application, created by Charamidis Sotirios  year: 2024, is intended for the purpose of aiding the lost and found office at the airport.\n");
+                "Software License Agreement:\n" +
+                "This Lost & Found Management System is proprietary software provided under license. The software is designed for professional use in lost and found operations.\n" +
+                "\n" +
+                "Limitation of Liability:\n" +
+                "The software is provided \"as is\" without warranties of any kind. While we strive for accuracy and reliability, we cannot guarantee error-free operation. Users assume all risks associated with software use.\n" +
+                "\n" +
+                "Data Security:\n" +
+                "Users are responsible for maintaining appropriate data security measures, including regular backups and access controls. The software includes built-in security features, but users must implement proper operational procedures.\n" +
+                "\n" +
+                "System Requirements:\n" +
+                "• Java 11 or higher\n" +
+                "• SQLite database compatibility\n" +
+                "• Network access for web features\n" +
+                "• Adequate system resources for optimal performance\n" +
+                "\n" +
+                "Support & Updates:\n" +
+                "Technical support is available for licensed users. Software updates may be provided to improve functionality and security. Users are encouraged to maintain current versions.\n" +
+                "\n" +
+                "Compliance:\n" +
+                "Users must comply with applicable data protection regulations and organizational policies when using this system. Proper data handling procedures must be maintained.\n" +
+                "\n" +
+                "Copyright:\n" +
+                "© 2024 Charamidis Sotirios. All rights reserved. This software is intended for authorized use in lost and found operations.\n" +
+                "\n" +
+                "By using this application, you acknowledge acceptance of these terms and conditions.");
         text.setWrappingWidth(400);
         VBox disclaimer = new VBox(text);
         disclaimer.setAlignment(Pos.CENTER);
 
         //Contact Tab
 
-        Text contactText = new Text("Contact Us\n" +
+        Text contactText = new Text("Technical Support & Contact\n" +
                 "\n" +
-                "If you need assistance with the app, have any questions, or would like to request a translation, please don't hesitate to reach out to us. We're here to help!\n" +
+                "Professional Support Services:\n" +
+                "Our technical support team is available to assist with system implementation, troubleshooting, and optimization.\n" +
                 "\n" +
-                "Email: sotirisxaram@icloud.com");
+                "Support Services:\n" +
+                "• System installation and configuration\n" +
+                "• User training and documentation\n" +
+                "• Technical troubleshooting\n" +
+                "• Feature customization requests\n" +
+                "• Performance optimization\n" +
+                "• Security consultation\n" +
+                "\n" +
+                "Contact Information:\n" +
+                "Primary Support: sotirisxaram@icloud.com\n" +
+                "\n" +
+                "Response Time:\n" +
+                "• Critical issues: 24 hours\n" +
+                "• General inquiries: 48-72 hours\n" +
+                "• Feature requests: 1-2 weeks\n" +
+                "\n" +
+                "Documentation:\n" +
+                "Comprehensive user guides and technical documentation are available through the help system.\n" +
+                "\n" +
+                "Training:\n" +
+                "Custom training sessions can be arranged for organizations implementing the system.\n" +
+                "\n" +
+                "We are committed to providing professional support to ensure optimal system performance and user satisfaction.");
         contactText.setWrappingWidth(400);
         VBox contactContent = new VBox(contactText);
         contactContent.setAlignment(Pos.CENTER);

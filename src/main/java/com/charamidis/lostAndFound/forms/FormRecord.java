@@ -5,6 +5,7 @@ import com.charamidis.lostAndFound.models.User;
 import com.charamidis.lostAndFound.utils.MessageBoxOk;
 import com.charamidis.lostAndFound.utils.ImageManager;
 import com.charamidis.lostAndFound.utils.ActivityLogger;
+import com.charamidis.lostAndFound.utils.StatisticsManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -79,6 +80,8 @@ public class FormRecord extends Stage {
     private Button saveBtn;
     private Button cancelBtn;
     private Button printBtn;
+    private Button qrCodeBtn;
+    private Button returnItemBtn;
     private Button returnBtn;
     
     private static final Logger logger = Logger.getLogger(FormRecord.class.getName());
@@ -93,6 +96,9 @@ public class FormRecord extends Stage {
         
         createUI();
         loadRecords();
+        
+        // Initially disable all form fields
+        enableFormFields(false);
         
         // Set window properties
         setMinWidth(1200);
@@ -141,6 +147,10 @@ public class FormRecord extends Stage {
                 saveAction();
             } else if (e.isControlDown() && e.getCode() == KeyCode.N) {
                 newAction();
+            } else if (e.isControlDown() && e.isShiftDown() && e.getCode() == KeyCode.B) {
+                printAction(); // Ctrl+Shift+B for barcode printing
+            } else if (e.isControlDown() && e.isShiftDown() && e.getCode() == KeyCode.Q) {
+                qrCodeAction(); // Ctrl+Shift+Q for QR code printing
             }
         });
     }
@@ -388,12 +398,45 @@ public class FormRecord extends Stage {
         HBox imageContainer = new HBox(15);
         imageContainer.setAlignment(Pos.CENTER_LEFT);
         
-        // Image view
+        // Image view with placeholder
         imageView = new ImageView();
         imageView.setFitWidth(150);
         imageView.setFitHeight(150);
         imageView.setPreserveRatio(true);
         imageView.setStyle("-fx-border-color: #dee2e6; -fx-border-width: 2; -fx-border-radius: 8;");
+        
+        // Add double-click functionality for full-screen image viewer
+        imageView.setOnMouseClicked(event -> {
+            if (event.getButton() == javafx.scene.input.MouseButton.PRIMARY && event.getClickCount() == 2) {
+                if (imageView.getImage() != null) {
+                    com.charamidis.lostAndFound.components.ImageViewer.showImage(imageView.getImage());
+                }
+            }
+        });
+        
+        // Add cursor change on hover
+        imageView.setOnMouseEntered(event -> {
+            if (imageView.getImage() != null) {
+                imageView.setCursor(javafx.scene.Cursor.HAND);
+            }
+        });
+        
+        imageView.setOnMouseExited(event -> {
+            imageView.setCursor(javafx.scene.Cursor.DEFAULT);
+        });
+        
+        // Create placeholder label
+        Label placeholderLabel = new Label("Δεν υπάρχει εικόνα");
+        placeholderLabel.setFont(Font.font("Arial", 12));
+        placeholderLabel.setTextFill(Color.rgb(108, 117, 125));
+        placeholderLabel.setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 50; -fx-alignment: center;");
+        placeholderLabel.setPrefWidth(150);
+        placeholderLabel.setPrefHeight(150);
+        placeholderLabel.setVisible(true);
+        
+        // Stack pane to overlay placeholder and image
+        StackPane imageStack = new StackPane();
+        imageStack.getChildren().addAll(placeholderLabel, imageView);
         
         // Image buttons
         VBox buttonContainer = new VBox(10);
@@ -409,7 +452,7 @@ public class FormRecord extends Stage {
         removeImageBtn.setVisible(false);
         
         buttonContainer.getChildren().addAll(addImageBtn, removeImageBtn);
-        imageContainer.getChildren().addAll(imageView, buttonContainer);
+        imageContainer.getChildren().addAll(imageStack, buttonContainer);
         
         section.getChildren().addAll(sectionTitle, imageContainer);
         return section;
@@ -417,7 +460,7 @@ public class FormRecord extends Stage {
     
     private VBox createTableContainer() {
         VBox tableContainer = new VBox(10);
-        tableContainer.setPrefWidth(600);
+        // Remove fixed width to allow expansion
         tableContainer.setPadding(new Insets(20));
         tableContainer.setStyle("-fx-background-color: white; -fx-background-radius: 10;");
         
@@ -502,9 +545,10 @@ public class FormRecord extends Stage {
         
         // Add selection listener
         recordsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
+            if (newSelection != null && !isEditMode) {
                 loadRecordForEdit(newSelection);
             }
+            // When in edit mode, selection changes are ignored completely
         });
         
         tableContainer.getChildren().addAll(tableTitle, recordsTable);
@@ -523,14 +567,18 @@ public class FormRecord extends Stage {
         saveBtn = createButton("Αποθήκευση", "#28a745", e -> saveAction());
         cancelBtn = createButton("Ακύρωση", "#6c757d", e -> cancelAction());
         printBtn = createButton("Εκτύπωση", "#6f42c1", e -> printAction());
+        qrCodeBtn = createButton("QR Code", "#28a745", e -> qrCodeAction());
+        returnItemBtn = createButton("Επιστροφή Αντικειμένου", "#fd7e14", e -> returnItemAction());
         returnBtn = createButton("Επιστροφή", "#17a2b8", e -> returnAction());
         
-        // Initially disable edit/delete buttons
+        // Initially disable edit/delete/return buttons
         editBtn.setDisable(true);
         deleteBtn.setDisable(true);
         printBtn.setDisable(true);
+        qrCodeBtn.setDisable(true);
+        returnItemBtn.setDisable(true);
         
-        buttonContainer.getChildren().addAll(newBtn, editBtn, deleteBtn, saveBtn, cancelBtn, printBtn, returnBtn);
+        buttonContainer.getChildren().addAll(newBtn, editBtn, deleteBtn, saveBtn, cancelBtn, printBtn, qrCodeBtn, returnItemBtn, returnBtn);
         return buttonContainer;
     }
     
@@ -553,6 +601,7 @@ public class FormRecord extends Stage {
             while (rs.next()) {
                 Record record = new Record();
                 record.setId(rs.getInt("id"));
+                record.setUid(rs.getString("uid"));
                 record.setOfficer_id(rs.getInt("officer_id"));
                 record.setFounder_last_name(rs.getString("founder_last_name"));
                 record.setFounder_first_name(rs.getString("founder_first_name"));
@@ -565,22 +614,10 @@ public class FormRecord extends Stage {
                 
                 // Handle dates safely
                 String foundDateStr = rs.getString("found_date");
-                if (foundDateStr != null) {
-                    try {
-                        record.setFound_date(java.sql.Date.valueOf(foundDateStr));
-                    } catch (Exception e) {
-                        record.setFound_date(null);
-                    }
-                }
+                record.setFound_date(foundDateStr);
                 
                 String foundTimeStr = rs.getString("found_time");
-                if (foundTimeStr != null) {
-                    try {
-                        record.setFound_time(java.sql.Time.valueOf(foundTimeStr));
-                    } catch (Exception e) {
-                        record.setFound_time(null);
-                    }
-                }
+                record.setFound_time(foundTimeStr);
                 
                 record.setFound_location(rs.getString("found_location"));
                 record.setItem_description(rs.getString("item_description"));
@@ -628,10 +665,18 @@ public class FormRecord extends Stage {
         
         // Set dates
         if (record.getFound_date() != null) {
-            foundDatePicker.setValue(record.getFound_date().toLocalDate());
+            if (record.getFound_date() != null && !record.getFound_date().isEmpty()) {
+                try {
+                    foundDatePicker.setValue(LocalDate.parse(record.getFound_date()));
+                } catch (Exception e) {
+                    foundDatePicker.setValue(LocalDate.now().minusDays(1));
+                }
+            } else {
+                foundDatePicker.setValue(LocalDate.now().minusDays(1));
+            }
         }
-        if (record.getFound_time() != null) {
-            foundTimeField.setText(record.getFound_time().toString());
+        if (record.getFound_time() != null && !record.getFound_time().isEmpty()) {
+            foundTimeField.setText(record.getFound_time());
         }
         
         foundLocationField.setText(record.getFound_location());
@@ -645,24 +690,67 @@ public class FormRecord extends Stage {
         storageLocationField.setText(record.getStorage_location());
         
         // Load image if exists
-        if (record.getPicture_path() != null && !record.getPicture_path().isEmpty()) {
-            File imageFile = new File(record.getPicture_path());
-            if (imageFile.exists()) {
-                Image image = new Image(imageFile.toURI().toString());
-                imageView.setImage(image);
-                imageView.setVisible(true);
-                removeImageBtn.setVisible(true);
-                currentImagePath = record.getPicture_path();
-            }
-        }
+        loadImageForRecord(record);
         
-        // Enable edit/delete buttons
+        // Enable edit/delete/return buttons
         editBtn.setDisable(false);
         deleteBtn.setDisable(false);
         printBtn.setDisable(false);
+        qrCodeBtn.setDisable(false);
+        
+        // Disable return button if record has already been returned (check database)
+        if (isRecordAlreadyReturned(record.getId())) {
+            returnItemBtn.setDisable(true);
+        } else {
+            returnItemBtn.setDisable(false);
+        }
     }
     
-    private void newAction() {
+    private void loadImageForRecord(Record record) {
+        // Clear current image first
+        imageView.setImage(null);
+        imageView.setVisible(false);
+        removeImageBtn.setVisible(false);
+        currentImagePath = null;
+        
+        // Show placeholder by default
+        StackPane imageStack = (StackPane) imageView.getParent();
+        if (imageStack != null) {
+            Label placeholderLabel = (Label) imageStack.getChildren().get(0);
+            placeholderLabel.setVisible(true);
+        }
+        
+        // Load image if exists
+        if (record.getPicture_path() != null && !record.getPicture_path().isEmpty()) {
+            try {
+                // Use ImageManager to load the image
+                Image image = ImageManager.loadImage(record.getPicture_path());
+                if (image != null) {
+                    imageView.setImage(image);
+                    imageView.setVisible(true);
+                    removeImageBtn.setVisible(true);
+                    currentImagePath = record.getPicture_path();
+                    
+                    // Hide placeholder when image is loaded
+                    if (imageStack != null) {
+                        Label placeholderLabel = (Label) imageStack.getChildren().get(0);
+                        placeholderLabel.setVisible(false);
+                    }
+                    
+                    System.out.println("🖼️ Loaded image for record ID " + record.getId() + ": " + record.getPicture_path());
+                } else {
+                    System.out.println("⚠️ Image file not found for record ID " + record.getId() + ": " + record.getPicture_path());
+                }
+            } catch (Exception e) {
+                System.out.println("❌ Error loading image for record ID " + record.getId() + ": " + e.getMessage());
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("ℹ️ No image path for record ID " + record.getId());
+        }
+    }
+    
+    public void newAction() {
         clearForm();
         isEditMode = false;
         editingRecordId = -1;
@@ -672,6 +760,22 @@ public class FormRecord extends Stage {
         editBtn.setDisable(true);
         deleteBtn.setDisable(true);
         printBtn.setDisable(true);
+        qrCodeBtn.setDisable(true);
+        returnItemBtn.setDisable(true);
+        
+        // Disable the table to prevent selection changes while creating new record
+        recordsTable.setDisable(true);
+        recordsTable.setOpacity(0.6);
+        
+        // Clear any existing selection
+        recordsTable.getSelectionModel().clearSelection();
+        
+        // Focus on the location field (first input field)
+        Platform.runLater(() -> {
+            if (foundLocationField != null) {
+                foundLocationField.requestFocus();
+            }
+        });
     }
     
     private void editAction() {
@@ -681,6 +785,13 @@ public class FormRecord extends Stage {
             enableFormFields(true);
             saveBtn.setDisable(false);
             cancelBtn.setDisable(false);
+            
+            // Disable the entire table to prevent any interaction
+            recordsTable.setDisable(true);
+            recordsTable.setOpacity(0.6);
+            
+            // Clear table selection to prevent changes while editing
+            recordsTable.getSelectionModel().clearSelection();
         }
     }
     
@@ -707,9 +818,12 @@ public class FormRecord extends Stage {
                         
                         loadRecords();
                         clearForm();
-                        new MessageBoxOk("Η εγγραφή διαγράφηκε επιτυχώς.");
+                        new MessageBoxOk("✅ Η εγγραφή διαγράφηκε επιτυχώς!");
                     } catch (SQLException e) {
-                        new MessageBoxOk("Σφάλμα διαγραφής εγγραφής: " + e.getMessage());
+                        new MessageBoxOk("❌ Σφάλμα διαγραφής εγγραφής: " + e.getMessage());
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        new MessageBoxOk("❌ Σφάλμα: " + e.getMessage());
                         e.printStackTrace();
                     }
                 }
@@ -736,8 +850,29 @@ public class FormRecord extends Stage {
             saveBtn.setDisable(true);
             cancelBtn.setDisable(true);
             
+            // Re-enable the table
+            recordsTable.setDisable(false);
+            recordsTable.setOpacity(1.0);
+            
+            // Restore selection to the updated record
+            if (editingRecordId > 0) {
+                recordsList.stream()
+                    .filter(record -> record.getId().equals(editingRecordId))
+                    .findFirst()
+                    .ifPresent(record -> recordsTable.getSelectionModel().select(record));
+            }
+            
+            // Update statistics
+            if (StatisticsManager.getInstance() != null) {
+                StatisticsManager.getInstance().forceUpdate();
+            }
+            
+            new MessageBoxOk("✅ Η εγγραφή αποθηκεύτηκε επιτυχώς!");
         } catch (SQLException e) {
-            new MessageBoxOk("Σφάλμα αποθήκευσης: " + e.getMessage());
+            new MessageBoxOk("❌ Σφάλμα αποθήκευσης: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            new MessageBoxOk("❌ Σφάλμα: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -747,7 +882,7 @@ public class FormRecord extends Stage {
                       "founder_id_number, founder_telephone, founder_street_address, founder_street_number, " +
                       "founder_father_name, founder_area_inhabitant, found_date, found_time, found_location, " +
                       "item_description, item_category, item_brand, item_model, item_color, item_serial_number, " +
-                      "item_other_details, storage_location, picture_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                      "item_other_details, storage_location, status, picture_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         PreparedStatement stmt = connection.prepareStatement(query);
         
@@ -771,7 +906,8 @@ public class FormRecord extends Stage {
         stmt.setString(18, itemSerialNumberField.getText());
         stmt.setString(19, itemOtherDetailsField.getText());
         stmt.setString(20, storageLocationField.getText());
-        stmt.setString(21, currentImagePath);
+        stmt.setString(21, statusCombo.getValue());
+        stmt.setString(22, currentImagePath);
         
         stmt.executeUpdate();
         stmt.close();
@@ -779,8 +915,6 @@ public class FormRecord extends Stage {
         // Log activity
         ActivityLogger.logActivity(String.valueOf(currentUser.getAm()), "CREATE_RECORD", 
             "Created new record");
-        
-        new MessageBoxOk("Η εγγραφή αποθηκεύτηκε επιτυχώς.");
     }
     
     private void updateRecord() throws SQLException {
@@ -790,7 +924,7 @@ public class FormRecord extends Stage {
                       "found_date = ?, found_time = ?, found_location = ?, item_description = ?, " +
                       "item_category = ?, item_brand = ?, item_model = ?, item_color = ?, " +
                       "item_serial_number = ?, item_other_details = ?, storage_location = ?, " +
-                      "picture_path = ? WHERE id = ?";
+                      "status = ?, picture_path = ? WHERE id = ?";
         
         PreparedStatement stmt = connection.prepareStatement(query);
         
@@ -813,8 +947,9 @@ public class FormRecord extends Stage {
         stmt.setString(17, itemSerialNumberField.getText());
         stmt.setString(18, itemOtherDetailsField.getText());
         stmt.setString(19, storageLocationField.getText());
-        stmt.setString(20, currentImagePath);
-        stmt.setInt(21, editingRecordId);
+        stmt.setString(20, statusCombo.getValue());
+        stmt.setString(21, currentImagePath);
+        stmt.setInt(22, editingRecordId);
         
         stmt.executeUpdate();
         stmt.close();
@@ -822,8 +957,6 @@ public class FormRecord extends Stage {
         // Log activity
         ActivityLogger.logActivity(String.valueOf(currentUser.getAm()), "UPDATE_RECORD", 
             "Updated record ID: " + editingRecordId);
-        
-        new MessageBoxOk("Η εγγραφή ενημερώθηκε επιτυχώς.");
     }
     
     private void cancelAction() {
@@ -836,18 +969,120 @@ public class FormRecord extends Stage {
         editBtn.setDisable(true);
         deleteBtn.setDisable(true);
         printBtn.setDisable(true);
+        qrCodeBtn.setDisable(true);
+        returnItemBtn.setDisable(true);
+        
+        // Re-enable the table
+        recordsTable.setDisable(false);
+        recordsTable.setOpacity(1.0);
     }
     
     private void printAction() {
         Record selectedRecord = recordsTable.getSelectionModel().getSelectedItem();
         if (selectedRecord != null) {
-            // TODO: Implement print functionality
-            new MessageBoxOk("Εκτύπωση εγγραφής ID: " + selectedRecord.getId() + " - Σε εξέλιξη");
+            try {
+                // Print barcode using the selected record
+                com.charamidis.lostAndFound.utils.BarcodePrinter.printBarcode(selectedRecord);
+                new MessageBoxOk("✅ Barcode printed successfully!\nRecord ID: " + selectedRecord.getId() + "\nUID: " + selectedRecord.getUid());
+            } catch (Exception e) {
+                new MessageBoxOk("❌ Error printing barcode: " + e.getMessage());
+                e.printStackTrace();
+            }
+        } else {
+            new MessageBoxOk("Παρακαλώ επιλέξτε μια εγγραφή για εκτύπωση barcode.");
         }
+    }
+    
+    private void qrCodeAction() {
+        Record selectedRecord = recordsTable.getSelectionModel().getSelectedItem();
+        if (selectedRecord != null) {
+            try {
+                // Get the web server URL dynamically
+                String baseUrl = getNetworkBaseUrl();
+                
+                // Print QR code using the selected record
+                com.charamidis.lostAndFound.utils.BarcodePrinter.printQRCode(selectedRecord, baseUrl);
+                new MessageBoxOk("✅ QR Code printed successfully!\nRecord ID: " + selectedRecord.getId() + "\nUID: " + selectedRecord.getUid() + "\n\nWhen scanned, this QR code will open:\n" + baseUrl + "/public/record/" + selectedRecord.getUid());
+            } catch (Exception e) {
+                new MessageBoxOk("❌ Error printing QR code: " + e.getMessage());
+                e.printStackTrace();
+            }
+        } else {
+            new MessageBoxOk("Παρακαλώ επιλέξτε μια εγγραφή για εκτύπωση QR code.");
+        }
+    }
+    
+    private String getNetworkBaseUrl() {
+        try {
+            // Try to get the local network IP address
+            java.net.InetAddress localHost = java.net.InetAddress.getLocalHost();
+            String hostAddress = localHost.getHostAddress();
+            
+            // Check if it's a local network IP (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
+            if (hostAddress.startsWith("192.168.") || 
+                hostAddress.startsWith("10.") || 
+                (hostAddress.startsWith("172.") && isInPrivateRange(hostAddress))) {
+                return "http://" + hostAddress + ":8080";
+            }
+            
+            // Fallback to localhost if not a private network IP
+            return "http://localhost:8080";
+        } catch (Exception e) {
+            // Fallback to localhost if there's any error
+            return "http://localhost:8080";
+        }
+    }
+    
+    private boolean isInPrivateRange(String ip) {
+        try {
+            String[] parts = ip.split("\\.");
+            if (parts.length == 4) {
+                int secondOctet = Integer.parseInt(parts[1]);
+                return secondOctet >= 16 && secondOctet <= 31;
+            }
+        } catch (Exception e) {
+            // Ignore parsing errors
+        }
+        return false;
     }
     
     private void returnAction() {
         close();
+    }
+    
+    private void returnItemAction() {
+        Record selectedRecord = recordsTable.getSelectionModel().getSelectedItem();
+        if (selectedRecord != null) {
+            // Check if record has already been returned by querying the returns table
+            if (isRecordAlreadyReturned(selectedRecord.getId())) {
+                new MessageBoxOk("Αυτή η εγγραφή έχει ήδη επιστραφεί και δεν μπορεί να επιστραφεί ξανά.");
+                return;
+            }
+            
+            // Open return form with the selected record
+            new ReturnForm(connection, currentUser, selectedRecord);
+        }
+    }
+    
+    private boolean isRecordAlreadyReturned(int recordId) {
+        try {
+            String checkQuery = "SELECT COUNT(*) FROM returns WHERE record_id = ?";
+            PreparedStatement stmt = connection.prepareStatement(checkQuery);
+            stmt.setInt(1, recordId);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                stmt.close();
+                return count > 0;
+            }
+            stmt.close();
+            return false;
+        } catch (SQLException e) {
+            new MessageBoxOk("Σφάλμα κατά τον έλεγχο επιστροφής: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
     
     private void addImage() {
@@ -874,6 +1109,13 @@ public class FormRecord extends Stage {
         imageView.setVisible(false);
         removeImageBtn.setVisible(false);
         currentImagePath = null;
+        
+        // Show placeholder when image is removed
+        StackPane imageStack = (StackPane) imageView.getParent();
+        if (imageStack != null) {
+            Label placeholderLabel = (Label) imageStack.getChildren().get(0);
+            placeholderLabel.setVisible(true);
+        }
     }
     
     private void clearForm() {
@@ -907,6 +1149,7 @@ public class FormRecord extends Stage {
     }
     
     private void enableFormFields(boolean enabled) {
+        // Founder information fields
         founderLastNameField.setEditable(enabled);
         founderFirstNameField.setEditable(enabled);
         founderIdNumberField.setEditable(enabled);
@@ -915,9 +1158,14 @@ public class FormRecord extends Stage {
         founderStreetNumberField.setEditable(enabled);
         founderFatherNameField.setEditable(enabled);
         founderAreaInhabitantField.setEditable(enabled);
+        
+        // Found information fields
         foundDatePicker.setDisable(!enabled);
         foundTimeField.setEditable(enabled);
         foundLocationField.setEditable(enabled);
+        storageLocationField.setEditable(enabled);
+        
+        // Item information fields
         itemDescriptionField.setEditable(enabled);
         itemCategoryCombo.setDisable(!enabled);
         itemBrandField.setEditable(enabled);
@@ -925,9 +1173,54 @@ public class FormRecord extends Stage {
         itemColorField.setEditable(enabled);
         itemSerialNumberField.setEditable(enabled);
         itemOtherDetailsField.setEditable(enabled);
-        storageLocationField.setEditable(enabled);
         statusCombo.setDisable(!enabled);
+        
+        // Image management buttons
         addImageBtn.setDisable(!enabled);
+        removeImageBtn.setDisable(!enabled);
+        
+        // Visual feedback for disabled state
+        if (!enabled) {
+            // Add visual styling to show fields are disabled
+            String disabledStyle = "-fx-background-color: #f8f9fa; -fx-text-fill: #6c757d;";
+            founderLastNameField.setStyle(disabledStyle);
+            founderFirstNameField.setStyle(disabledStyle);
+            founderIdNumberField.setStyle(disabledStyle);
+            founderTelephoneField.setStyle(disabledStyle);
+            founderStreetAddressField.setStyle(disabledStyle);
+            founderStreetNumberField.setStyle(disabledStyle);
+            founderFatherNameField.setStyle(disabledStyle);
+            founderAreaInhabitantField.setStyle(disabledStyle);
+            foundTimeField.setStyle(disabledStyle);
+            foundLocationField.setStyle(disabledStyle);
+            itemDescriptionField.setStyle(disabledStyle);
+            itemBrandField.setStyle(disabledStyle);
+            itemModelField.setStyle(disabledStyle);
+            itemColorField.setStyle(disabledStyle);
+            itemSerialNumberField.setStyle(disabledStyle);
+            itemOtherDetailsField.setStyle(disabledStyle);
+            storageLocationField.setStyle(disabledStyle);
+        } else {
+            // Reset to normal styling when enabled
+            String normalStyle = "-fx-background-color: white; -fx-text-fill: black;";
+            founderLastNameField.setStyle(normalStyle);
+            founderFirstNameField.setStyle(normalStyle);
+            founderIdNumberField.setStyle(normalStyle);
+            founderTelephoneField.setStyle(normalStyle);
+            founderStreetAddressField.setStyle(normalStyle);
+            founderStreetNumberField.setStyle(normalStyle);
+            founderFatherNameField.setStyle(normalStyle);
+            founderAreaInhabitantField.setStyle(normalStyle);
+            foundTimeField.setStyle(normalStyle);
+            foundLocationField.setStyle(normalStyle);
+            itemDescriptionField.setStyle(normalStyle);
+            itemBrandField.setStyle(normalStyle);
+            itemModelField.setStyle(normalStyle);
+            itemColorField.setStyle(normalStyle);
+            itemSerialNumberField.setStyle(normalStyle);
+            itemOtherDetailsField.setStyle(normalStyle);
+            storageLocationField.setStyle(normalStyle);
+        }
     }
     
     private boolean validateForm() {
@@ -950,6 +1243,12 @@ public class FormRecord extends Stage {
         }
         if (foundTimeField.getText().trim().isEmpty()) {
             errors.append("Η ώρα εύρεσης είναι υποχρεωτική\n");
+        } else {
+            // Validate time format (HH:mm)
+            String timeText = foundTimeField.getText().trim();
+            if (!isValidTimeFormat(timeText)) {
+                errors.append("Η ώρα πρέπει να είναι σε μορφή HH:mm (π.χ. 14:30)\n");
+            }
         }
         
         if (errors.length() > 0) {
@@ -958,5 +1257,15 @@ public class FormRecord extends Stage {
         }
         
             return true;
+    }
+    
+    private boolean isValidTimeFormat(String timeText) {
+        if (timeText == null || timeText.trim().isEmpty()) {
+            return false;
+        }
+        
+        // Check if time matches HH:mm format
+        String timePattern = "^([01]?[0-9]|2[0-3]):[0-5][0-9]$";
+        return timeText.trim().matches(timePattern);
     }
 }

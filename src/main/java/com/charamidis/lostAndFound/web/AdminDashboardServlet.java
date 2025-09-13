@@ -510,7 +510,7 @@ public class AdminDashboardServlet extends HttpServlet {
             "            <td>${record.id}</td>\n" +
             "            <td>${record.record_date}</td>\n" +
             "            <td>${record.founder_first_name} ${record.founder_last_name}</td>\n" +
-            "            <td>${record.item_description}</td>\n" +
+            "            <td>${record.item_description || 'N/A'}</td>\n" +
             "            <td>${record.found_location}</td>\n" +
             "            <td><span class=\"status-badge status-active\">Active</span></td>\n" +
             "        `;\n" +
@@ -528,7 +528,7 @@ public class AdminDashboardServlet extends HttpServlet {
             "            <td>${returnItem.id}</td>\n" +
             "            <td>${returnItem.return_date}</td>\n" +
             "            <td>${returnItem.claimant_name}</td>\n" +
-            "            <td>${returnItem.item_description}</td>\n" +
+            "            <td>${returnItem.item_description || 'N/A'}</td>\n" +
             "            <td>${returnItem.officer_name}</td>\n" +
             "            <td><span class=\"status-badge status-returned\">Returned</span></td>\n" +
             "        `;\n" +
@@ -558,7 +558,7 @@ public class AdminDashboardServlet extends HttpServlet {
             "    const filtered = recordsData.filter(record => \n" +
             "        record.founder_first_name.toLowerCase().includes(searchTerm) ||\n" +
             "        record.founder_last_name.toLowerCase().includes(searchTerm) ||\n" +
-            "        record.item_description.toLowerCase().includes(searchTerm) ||\n" +
+            "        (record.item_description || '').toLowerCase().includes(searchTerm) ||\n" +
             "        record.found_location.toLowerCase().includes(searchTerm)\n" +
             "    );\n" +
             "    displayRecords(filtered);\n" +
@@ -568,7 +568,7 @@ public class AdminDashboardServlet extends HttpServlet {
             "    const searchTerm = document.getElementById('returnsSearch').value.toLowerCase();\n" +
             "    const filtered = returnsData.filter(returnItem => \n" +
             "        returnItem.claimant_name.toLowerCase().includes(searchTerm) ||\n" +
-            "        returnItem.item_description.toLowerCase().includes(searchTerm) ||\n" +
+            "        (returnItem.item_description || '').toLowerCase().includes(searchTerm) ||\n" +
             "        returnItem.officer_name.toLowerCase().includes(searchTerm)\n" +
             "    );\n" +
             "    displayReturns(filtered);\n" +
@@ -624,6 +624,14 @@ public class AdminDashboardServlet extends HttpServlet {
             "                <div class=\"activity-item\">\n" +
             "                    <div class=\"activity-time\">This Month: ${data.recordsThisMonth}</div>\n" +
             "                    <div class=\"activity-action\">New Records</div>\n" +
+            "                </div>\n" +
+            "                <div class=\"activity-item\">\n" +
+            "                    <div class=\"activity-time\">Total Returns: ${data.totalReturns || 0}</div>\n" +
+            "                    <div class=\"activity-action\">Items Returned</div>\n" +
+            "                </div>\n" +
+            "                <div class=\"activity-item\">\n" +
+            "                    <div class=\"activity-time\">This Month: ${data.returnsThisMonth || 0}</div>\n" +
+            "                    <div class=\"activity-action\">Returns This Month</div>\n" +
             "                </div>\n" +
             "            `;\n" +
             "        })\n" +

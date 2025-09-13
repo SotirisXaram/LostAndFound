@@ -56,8 +56,8 @@ public class Main extends Application{
         ImageManager.initializeDataFolder();
         // Start automatic backup
         AutoBackupManager.startAutoBackup();
-        // Initialize web server (optional) - temporarily disabled
-        // WebServerManager.initialize();
+        // Initialize web server
+        WebServerManager.initialize();
 
         
         //Username field

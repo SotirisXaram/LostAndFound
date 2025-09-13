@@ -31,8 +31,7 @@ public class ActivityLogger {
                 stmt.executeUpdate();
             }
             
-            // Broadcast activity to web dashboard
-            WebServerManager.broadcastActivity(user, action, details);
+            // WebSocket broadcast removed
             
         } catch (SQLException e) {
             logger.log(java.util.logging.Level.SEVERE, "Error logging activity", e);

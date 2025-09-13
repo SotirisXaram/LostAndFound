@@ -139,6 +139,14 @@ public class ModernSearchForm extends Stage {
         searchGrid.add(new Label("Τοποθεσία:"), 4, 1);
         searchGrid.add(locationField, 5, 1);
         
+        // Row 3 - Barcode search
+        TextField barcodeField = new TextField();
+        barcodeField.setPromptText("Barcode/UID αναζήτηση...");
+        barcodeField.setPrefWidth(300);
+        
+        searchGrid.add(new Label("Barcode/UID:"), 0, 2);
+        searchGrid.add(barcodeField, 1, 2);
+        
         // Search and Clear buttons
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
@@ -155,7 +163,7 @@ public class ModernSearchForm extends Stage {
         
         // Set up search functionality
         searchBtn.setOnAction(e -> performSearch(searchField.getText(), categoryCombo.getValue(), 
-                fromDatePicker.getValue(), toDatePicker.getValue(), locationField.getText()));
+                fromDatePicker.getValue(), toDatePicker.getValue(), locationField.getText(), barcodeField.getText()));
         
         clearBtn.setOnAction(e -> {
             searchField.clear();
@@ -163,6 +171,7 @@ public class ModernSearchForm extends Stage {
             fromDatePicker.setValue(null);
             toDatePicker.setValue(null);
             locationField.clear();
+            barcodeField.clear();
             filteredList.setPredicate(null);
         });
         
@@ -335,25 +344,14 @@ public class ModernSearchForm extends Stage {
                 
                 Record record = new Record();
                 record.setId(rs.getInt("id"));
+                record.setUid(rs.getString("uid"));
                 
                 // Handle date and time conversion
                 String foundDateStr = rs.getString("found_date");
-                if (foundDateStr != null) {
-                    try {
-                        record.setFound_date(java.sql.Date.valueOf(foundDateStr));
-                    } catch (Exception e) {
-                        record.setFound_date(null);
-                    }
-                }
+                record.setFound_date(foundDateStr);
                 
                 String foundTimeStr = rs.getString("found_time");
-                if (foundTimeStr != null) {
-                    try {
-                        record.setFound_time(java.sql.Time.valueOf(foundTimeStr));
-                    } catch (Exception e) {
-                        record.setFound_time(null);
-                    }
-                }
+                record.setFound_time(foundTimeStr);
                 
                 record.setItem_description(rs.getString("item_description"));
                 record.setItem_category(rs.getString("item_category"));
@@ -383,7 +381,7 @@ public class ModernSearchForm extends Stage {
     }
     
     private void performSearch(String searchText, String category, 
-                             LocalDate fromDate, LocalDate toDate, String location) {
+                             LocalDate fromDate, LocalDate toDate, String location, String barcodeText) {
         filteredList.setPredicate(record -> {
             boolean matches = true;
             
@@ -399,6 +397,14 @@ public class ModernSearchForm extends Stage {
                 );
             }
             
+            // Barcode/UID search
+            if (barcodeText != null && !barcodeText.trim().isEmpty()) {
+                String barcodeLower = barcodeText.toLowerCase().trim();
+                matches = matches && (
+                    (record.getUid() != null && record.getUid().toLowerCase().contains(barcodeLower))
+                );
+            }
+            
             // Category filter
             if (category != null && !category.isEmpty()) {
                 matches = matches && category.equals(record.getItem_category());
@@ -407,8 +413,8 @@ public class ModernSearchForm extends Stage {
             // Date range filter
             if (fromDate != null) {
                 try {
-                    if (record.getFound_date() != null) {
-                        LocalDate recordDate = record.getFound_date().toLocalDate();
+                    if (record.getFound_date() != null && !record.getFound_date().isEmpty()) {
+                        LocalDate recordDate = LocalDate.parse(record.getFound_date());
                         matches = matches && !recordDate.isBefore(fromDate);
                     }
                 } catch (Exception e) {
@@ -418,8 +424,8 @@ public class ModernSearchForm extends Stage {
             
             if (toDate != null) {
                 try {
-                    if (record.getFound_date() != null) {
-                        LocalDate recordDate = record.getFound_date().toLocalDate();
+                    if (record.getFound_date() != null && !record.getFound_date().isEmpty()) {
+                        LocalDate recordDate = LocalDate.parse(record.getFound_date());
                         matches = matches && !recordDate.isAfter(toDate);
                     }
                 } catch (Exception e) {

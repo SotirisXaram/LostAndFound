@@ -1,11 +1,10 @@
 package com.charamidis.lostAndFound.models;
 
 import java.io.Serializable;
-import java.sql.Date;
-import java.sql.Time;
 
 public class Record implements Serializable {
    private Integer id ;
+   private String uid;
    private String record_date;
    private Integer officer_id;
    private String founder_last_name;
@@ -16,25 +15,28 @@ public class Record implements Serializable {
    private String founder_street_number;
    private String founder_father_name;
    private String founder_area_inhabitant;
-   private Date found_date;
+   private String found_date;
     private String found_location;
     private String item_description;
-    private Time found_time;
+    private String found_time;
     private String record_time;
     private String item_category;
     private String item_brand;
     private String item_model;
     private String item_color;
     private String item_serial_number;
+    private String item_other_details;
     private String storage_location;
+    private String status;
     private String picture_path;
 
     public Record(){
 
     }
 
-    public Record(Integer id, String record_date,String record_time, Integer officer_id, String founder_last_name, String founder_first_name, String founder_id_number, String founder_telephone, String founder_street_address, String founder_street_number, String founder_father_name, String founder_area_inhabitant, Date found_date,Time found_time, String found_location, String item_description, String item_category, String item_brand, String item_model, String item_color, String item_serial_number, String storage_location, String picture_path) {
+    public Record(Integer id, String uid, String record_date,String record_time, Integer officer_id, String founder_last_name, String founder_first_name, String founder_id_number, String founder_telephone, String founder_street_address, String founder_street_number, String founder_father_name, String founder_area_inhabitant, String found_date,String found_time, String found_location, String item_description, String item_category, String item_brand, String item_model, String item_color, String item_serial_number, String item_other_details, String storage_location, String status, String picture_path) {
         this.id = id;
+        this.uid = uid;
         this.record_date=record_date;
         this.record_time=record_time;
         this.officer_id = officer_id;
@@ -55,7 +57,9 @@ public class Record implements Serializable {
         this.item_model = item_model;
         this.item_color = item_color;
         this.item_serial_number = item_serial_number;
+        this.item_other_details = item_other_details;
         this.storage_location = storage_location;
+        this.status = status;
         this.picture_path = picture_path;
     }
 
@@ -65,6 +69,14 @@ public class Record implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public String getRecord_date() {
@@ -147,11 +159,11 @@ public class Record implements Serializable {
         this.founder_area_inhabitant = founder_area_inhabitant;
     }
 
-    public Date getFound_date() {
+    public String getFound_date() {
         return found_date;
     }
 
-    public void setFound_date(Date found_date) {
+    public void setFound_date(String found_date) {
         this.found_date = found_date;
     }
 
@@ -171,11 +183,11 @@ public class Record implements Serializable {
         this.item_description = item_description;
     }
 
-    public Time getFound_time() {
+    public String getFound_time() {
         return found_time;
     }
 
-    public void setFound_time(Time found_time) {
+    public void setFound_time(String found_time) {
         this.found_time = found_time;
     }
 
@@ -241,6 +253,22 @@ public class Record implements Serializable {
 
     public void setPicture_path(String picture_path) {
         this.picture_path = picture_path;
+    }
+
+    public String getItem_other_details() {
+        return item_other_details;
+    }
+
+    public void setItem_other_details(String item_other_details) {
+        this.item_other_details = item_other_details;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override

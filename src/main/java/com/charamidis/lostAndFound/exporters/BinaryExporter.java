@@ -53,6 +53,7 @@ public class BinaryExporter {
 
                         Record record = new Record(
                                 rs.getInt("id"),
+                                rs.getString("uid"),
                                 recordDate.toString(),
                                 recordTime.toString(),
                                 rs.getInt("officer_id"),
@@ -64,8 +65,8 @@ public class BinaryExporter {
                                 rs.getString("founder_street_number"),
                                 rs.getString("founder_father_name"),
                                 rs.getString("founder_area_inhabitant"),
-                                rs.getDate("found_date"),
-                                rs.getTime("found_time"),
+                                rs.getString("found_date"),
+                                rs.getString("found_time"),
                                 rs.getString("found_location"),
                                 rs.getString("item_description"),
                                 rs.getString("item_category"),
@@ -73,7 +74,9 @@ public class BinaryExporter {
                                 rs.getString("item_model"),
                                 rs.getString("item_color"),
                                 rs.getString("item_serial_number"),
+                                rs.getString("item_other_details"),
                                 rs.getString("storage_location"),
+                                rs.getString("status"),
                                 rs.getString("picture_path")
                         );
                         oos.writeObject(record);

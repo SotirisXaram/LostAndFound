@@ -3,6 +3,11 @@ package com.charamidis.lostAndFound.pages;
 import com.charamidis.lostAndFound.models.Record;
 import com.charamidis.lostAndFound.models.User;
 import com.charamidis.lostAndFound.utils.MessageBoxOk;
+import com.charamidis.lostAndFound.utils.StatisticsManager;
+import javafx.geometry.Insets;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.*;
 import javafx.scene.*;
 import javafx.scene.layout.*;
@@ -24,7 +29,34 @@ public class ReturnScreen {
     HBox saveDeleteHbox;
     public ReturnScreen(Connection conn, User user, Record record) {
 
+        // Create main container with professional styling
+        VBox mainContainer = new VBox(30);
+        mainContainer.setPadding(new Insets(40));
+        mainContainer.setStyle("-fx-background-color: #f8f9fa;");
+        
+        // Header section
+        VBox headerSection = new VBox(10);
+        headerSection.setAlignment(Pos.CENTER);
+        
+        Label titleLabel = new Label("Process Return");
+        titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 28));
+        titleLabel.setTextFill(Color.rgb(52, 73, 94));
+        
+        Label subtitleLabel = new Label("Complete the return process for the selected item");
+        subtitleLabel.setFont(Font.font("Arial", 14));
+        subtitleLabel.setTextFill(Color.rgb(108, 117, 125));
+        
+        headerSection.getChildren().addAll(titleLabel, subtitleLabel);
+        
+        // Form section
+        VBox formSection = new VBox(20);
+        formSection.setPadding(new Insets(30));
+        formSection.setStyle("-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+        
         grid = new GridPane();
+        grid.setHgap(20);
+        grid.setVgap(15);
+        grid.setPadding(new Insets(20));
 
         ColumnConstraints col0 = new ColumnConstraints();
         col0.setHgrow(Priority.SOMETIMES);
@@ -44,57 +76,133 @@ public class ReturnScreen {
 
         grid.getColumnConstraints().addAll(col0,col1,col2,col3);
 
+         // Create labels with modern styling
          lblOfficer = new Label("Officer ID:");
+         lblOfficer.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+         lblOfficer.setTextFill(Color.rgb(52, 73, 94));
+         
          txtOfficer = new TextField();
          txtOfficer.setText(Integer.valueOf(user.getAm()).toString());
          txtOfficer.setEditable(false);
-
+         txtOfficer.setPrefWidth(200);
+         txtOfficer.setPrefHeight(35);
+         txtOfficer.setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-width: 1; -fx-border-radius: 5; -fx-padding: 8 12; -fx-font-size: 14;");
 
          lblLastName = new Label("Last Name:");
+         lblLastName.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+         lblLastName.setTextFill(Color.rgb(52, 73, 94));
+         
          txtLastName = new TextField();
+         txtLastName.setPrefWidth(200);
+         txtLastName.setPrefHeight(35);
+         txtLastName.setStyle("-fx-background-color: white; -fx-border-color: #dee2e6; -fx-border-width: 1; -fx-border-radius: 5; -fx-padding: 8 12; -fx-font-size: 14;");
 
          lblFirstName = new Label("First Name:");
+         lblFirstName.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+         lblFirstName.setTextFill(Color.rgb(52, 73, 94));
+         
          txtFirstName = new TextField();
+         txtFirstName.setPrefWidth(200);
+         txtFirstName.setPrefHeight(35);
+         txtFirstName.setStyle("-fx-background-color: white; -fx-border-color: #dee2e6; -fx-border-width: 1; -fx-border-radius: 5; -fx-padding: 8 12; -fx-font-size: 14;");
 
          lblDate = new Label("Date:");
+         lblDate.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+         lblDate.setTextFill(Color.rgb(52, 73, 94));
+         
          txtDate = new TextField();
          txtDate.setText(LocalDate.now().toString());
+         txtDate.setPrefWidth(200);
+         txtDate.setPrefHeight(35);
+         txtDate.setStyle("-fx-background-color: white; -fx-border-color: #dee2e6; -fx-border-width: 1; -fx-border-radius: 5; -fx-padding: 8 12; -fx-font-size: 14;");
 
          lblTime = new Label("Time:");
+         lblTime.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+         lblTime.setTextFill(Color.rgb(52, 73, 94));
+         
          txtTime = new TextField();
          txtTime.setText(LocalTime.now().withSecond(0).withNano(0).toString());
+         txtTime.setPrefWidth(200);
+         txtTime.setPrefHeight(35);
+         txtTime.setStyle("-fx-background-color: white; -fx-border-color: #dee2e6; -fx-border-width: 1; -fx-border-radius: 5; -fx-padding: 8 12; -fx-font-size: 14;");
 
          lblTelephone = new Label("Telephone:");
+         lblTelephone.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+         lblTelephone.setTextFill(Color.rgb(52, 73, 94));
+         
          txtTelephone = new TextField();
+         txtTelephone.setPrefWidth(200);
+         txtTelephone.setPrefHeight(35);
+         txtTelephone.setStyle("-fx-background-color: white; -fx-border-color: #dee2e6; -fx-border-width: 1; -fx-border-radius: 5; -fx-padding: 8 12; -fx-font-size: 14;");
 
          lblIdNumber = new Label("ID Number:");
+         lblIdNumber.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+         lblIdNumber.setTextFill(Color.rgb(52, 73, 94));
+         
          txtIdNumber = new TextField();
+         txtIdNumber.setPrefWidth(200);
+         txtIdNumber.setPrefHeight(35);
+         txtIdNumber.setStyle("-fx-background-color: white; -fx-border-color: #dee2e6; -fx-border-width: 1; -fx-border-radius: 5; -fx-padding: 8 12; -fx-font-size: 14;");
 
          lblFatherName = new Label("Father's Name:");
+         lblFatherName.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+         lblFatherName.setTextFill(Color.rgb(52, 73, 94));
+         
          txtFatherName = new TextField();
+         txtFatherName.setPrefWidth(200);
+         txtFatherName.setPrefHeight(35);
+         txtFatherName.setStyle("-fx-background-color: white; -fx-border-color: #dee2e6; -fx-border-width: 1; -fx-border-radius: 5; -fx-padding: 8 12; -fx-font-size: 14;");
 
          lblDateOfBirth = new Label("Date of Birth:");
+         lblDateOfBirth.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+         lblDateOfBirth.setTextFill(Color.rgb(52, 73, 94));
+         
          txtDateOfBirth = new TextField();
+         txtDateOfBirth.setPrefWidth(200);
+         txtDateOfBirth.setPrefHeight(35);
+         txtDateOfBirth.setStyle("-fx-background-color: white; -fx-border-color: #dee2e6; -fx-border-width: 1; -fx-border-radius: 5; -fx-padding: 8 12; -fx-font-size: 14;");
 
          lblStreetAddress = new Label("Street Address:");
+         lblStreetAddress.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+         lblStreetAddress.setTextFill(Color.rgb(52, 73, 94));
+         
          txtStreetAddress = new TextField();
+         txtStreetAddress.setPrefWidth(200);
+         txtStreetAddress.setPrefHeight(35);
+         txtStreetAddress.setStyle("-fx-background-color: white; -fx-border-color: #dee2e6; -fx-border-width: 1; -fx-border-radius: 5; -fx-padding: 8 12; -fx-font-size: 14;");
 
          lblStreetNumber = new Label("Street Number:");
+         lblStreetNumber.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+         lblStreetNumber.setTextFill(Color.rgb(52, 73, 94));
+         
          txtStreetNumber = new TextField();
+         txtStreetNumber.setPrefWidth(200);
+         txtStreetNumber.setPrefHeight(35);
+         txtStreetNumber.setStyle("-fx-background-color: white; -fx-border-color: #dee2e6; -fx-border-width: 1; -fx-border-radius: 5; -fx-padding: 8 12; -fx-font-size: 14;");
 
-         lblComment = new Label("Σχόλια: ");
+         lblComment = new Label("Comments:");
+         lblComment.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+         lblComment.setTextFill(Color.rgb(52, 73, 94));
+         
          txtComment = new TextArea();
          txtComment.setPrefHeight(100);
-         txtComment.setPrefWidth(250);
+         txtComment.setPrefWidth(300);
          txtComment.setWrapText(true);
+         txtComment.setStyle("-fx-background-color: white; -fx-border-color: #dee2e6; -fx-border-width: 1; -fx-border-radius: 5; -fx-padding: 8 12; -fx-font-size: 14;");
 
-
-         btnSave = new Button("Save");
+         btnSave = new Button("Save Return");
+         btnSave.setPrefWidth(120);
+         btnSave.setPrefHeight(40);
+         btnSave.setStyle("-fx-background-color: #28a745; -fx-text-fill: white; -fx-background-radius: 5; -fx-font-weight: bold; -fx-font-size: 14;");
+         
          btnCancel = new Button("Cancel");
+         btnCancel.setPrefWidth(120);
+         btnCancel.setPrefHeight(40);
+         btnCancel.setStyle("-fx-background-color: #6c757d; -fx-text-fill: white; -fx-background-radius: 5; -fx-font-weight: bold; -fx-font-size: 14;");
 
-         saveDeleteHbox = new HBox();
-         saveDeleteHbox.getChildren().addAll(btnSave,btnCancel);
-         saveDeleteHbox.setAlignment(Pos.BASELINE_CENTER);
+         saveDeleteHbox = new HBox(15);
+         saveDeleteHbox.getChildren().addAll(btnCancel, btnSave);
+         saveDeleteHbox.setAlignment(Pos.CENTER);
 
         grid.add(lblOfficer, 1, 0);
         grid.add(txtOfficer, 2, 0);
@@ -170,6 +278,12 @@ public class ReturnScreen {
                     if (rowsAffected > 0) {
                         System.out.println("Return inserted successfully.");
                         new MessageBoxOk("Η επιστροφή έγινε με επιτυχία");
+                        
+                        // Update statistics
+                        if (StatisticsManager.getInstance() != null) {
+                            StatisticsManager.getInstance().forceUpdate();
+                        }
+                        
                         stage.close();
                     } else {
                         System.out.println("Failed to insert return.");

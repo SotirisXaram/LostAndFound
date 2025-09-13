@@ -1,15 +1,19 @@
 package com.charamidis.lostAndFound.forms;
 
 import com.charamidis.lostAndFound.utils.MessageBoxOk;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,21 +35,65 @@ public class ResetId {
 
     public  ResetId(Connection conn){
         finalConn = conn;
-        btnCancel = new Button("Ακύρωση");
-        btnSave = new Button("Αλλαγή");
-        hboxBtn = new HBox();
-        hboxBtn.getChildren().addAll(btnSave,btnCancel);
-        hbox = new HBox();
-        lblId = new Label("ID:");
+        
+        // Create main container with professional styling
+        VBox mainContainer = new VBox(30);
+        mainContainer.setPadding(new Insets(40));
+        mainContainer.setAlignment(Pos.CENTER);
+        mainContainer.setStyle("-fx-background-color: #f8f9fa;");
+        
+        // Header section
+        VBox headerSection = new VBox(10);
+        headerSection.setAlignment(Pos.CENTER);
+        
+        Label titleLabel = new Label("Reset ID");
+        titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+        titleLabel.setTextFill(Color.rgb(52, 73, 94));
+        
+        Label subtitleLabel = new Label("Reset the database ID sequence");
+        subtitleLabel.setFont(Font.font("Arial", 14));
+        subtitleLabel.setTextFill(Color.rgb(108, 117, 125));
+        
+        headerSection.getChildren().addAll(titleLabel, subtitleLabel);
+        
+        // Form section
+        VBox formSection = new VBox(20);
+        formSection.setAlignment(Pos.CENTER);
+        formSection.setPadding(new Insets(30));
+        formSection.setStyle("-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+        
+        lblId = new Label("New ID Value:");
+        lblId.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        lblId.setTextFill(Color.rgb(52, 73, 94));
+        
         txtId = new TextField();
-        vBox = new VBox();
-
-        hbox.setAlignment(Pos.CENTER);
-        hboxBtn.setAlignment(Pos.CENTER);
-        vBox.setAlignment(Pos.CENTER);
-        hbox.getChildren().addAll(lblId,txtId);
-
-        vBox.getChildren().addAll(hbox,hboxBtn);
+        txtId.setPromptText("Enter the new ID value");
+        txtId.setPrefWidth(200);
+        txtId.setPrefHeight(35);
+        txtId.setStyle("-fx-background-color: white; -fx-border-color: #dee2e6; -fx-border-width: 1; -fx-border-radius: 5; -fx-padding: 8 12; -fx-font-size: 14;");
+        
+        VBox inputContainer = new VBox(8);
+        inputContainer.setAlignment(Pos.CENTER);
+        inputContainer.getChildren().addAll(lblId, txtId);
+        
+        // Button section
+        HBox buttonContainer = new HBox(15);
+        buttonContainer.setAlignment(Pos.CENTER);
+        
+        btnSave = new Button("Reset ID");
+        btnSave.setPrefWidth(120);
+        btnSave.setPrefHeight(40);
+        btnSave.setStyle("-fx-background-color: #dc3545; -fx-text-fill: white; -fx-background-radius: 5; -fx-font-weight: bold; -fx-font-size: 14;");
+        
+        btnCancel = new Button("Cancel");
+        btnCancel.setPrefWidth(120);
+        btnCancel.setPrefHeight(40);
+        btnCancel.setStyle("-fx-background-color: #6c757d; -fx-text-fill: white; -fx-background-radius: 5; -fx-font-weight: bold; -fx-font-size: 14;");
+        
+        buttonContainer.getChildren().addAll(btnCancel, btnSave);
+        
+        formSection.getChildren().addAll(inputContainer, buttonContainer);
+        mainContainer.getChildren().addAll(headerSection, formSection);
 
         btnCancel.setOnAction(e->{
             window.close();
@@ -85,13 +133,17 @@ public class ResetId {
 
 
 
-        scene = new Scene(vBox);
+        scene = new Scene(mainContainer);
         window = new Stage();
-        window.setTitle("Αλλαγή ID");
+        window.setTitle("Reset ID");
         window.setScene(scene);
-        window.setHeight(400);
-        window.setWidth(450);
+        window.setMinWidth(500);
+        window.setMinHeight(400);
+        window.setWidth(500);
+        window.setHeight(450);
         window.initModality(Modality.APPLICATION_MODAL);
+        window.initStyle(StageStyle.DECORATED);
+        window.centerOnScreen();
 
         window.show();
 
