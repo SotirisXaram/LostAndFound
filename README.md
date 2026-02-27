@@ -73,7 +73,7 @@ Comprehensive reporting module providing deep insights into system performance a
 Comprehensive tools for user management, server configuration, and mission-critical backups.
 
 ![Administration Dashboard](usageScreens/WebAdminDashboardMain.png)
-*Technical command center for system administrators.*
+*Web Service to always have access to the records/returns and activity .*
 
 ![User Directory](usageScreens/UserManagement.png)
 *Administrative interface for managing system users and roles.*
@@ -82,7 +82,7 @@ Comprehensive tools for user management, server configuration, and mission-criti
 *Simplified provisioning for new administrative and staff accounts.*
 
 ![Web Monitoring](usageScreens/WebAdminDashboard.png)
-*Real-time monitoring of the web server status and connected clients.*
+*Real-time monitoring of the web server status and records , returns.*
 
 ![System Settings](usageScreens/AutomaticBackUp:EnableWebServer:ManualBackup.png)
 *Unified control panel for web server orchestration and automated database redundancy.*
