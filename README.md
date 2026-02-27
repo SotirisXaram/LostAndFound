@@ -30,11 +30,8 @@ A streamlined interface for tracking, processing, and managing all lost and foun
 ![Main Dashboard](usageScreens/mainScreen.png)
 *Centralized dashboard providing an overview of all active and resolved records.*
 
-![Records Management](usageScreens/RecordsManagement.png)
-*Detailed record management interface for adding and editing item information.*
-
-![Extended Records View](usageScreens/RecordsManagement2.png)
-*Comprehensive view for large-scale record tracking and filtering.*
+![Records Management](usageScreens/RecordsManagement2.png)
+*Comprehensive view for large-scale record tracking and management.*
 
 ![Item Return Processing](usageScreens/ReturnForRecordItem.png)
 *Automated workflow for processing item returns with digital verification.*
