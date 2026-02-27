@@ -82,7 +82,7 @@ Comprehensive tools for user management, server configuration, and mission-criti
 *Simplified provisioning for new administrative and staff accounts.*
 
 ![Web Monitoring](usageScreens/WebAdminDashboard.png)
-*Real-time monitoring of the web server status and records , returns.*
+*Real-time monitoring of the web server status, records and returns.*
 
 ![System Settings](usageScreens/AutomaticBackUp:EnableWebServer:ManualBackup.png)
 *Unified control panel for web server orchestration and automated database redundancy.*
