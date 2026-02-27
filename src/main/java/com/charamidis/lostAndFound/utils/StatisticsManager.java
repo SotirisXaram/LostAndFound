@@ -29,20 +29,33 @@ public class StatisticsManager {
     private int todayRecords = 0;
     private int todayReturns = 0;
     
-    private StatisticsManager(Connection connection) {
-        this.connection = connection;
-        startPeriodicUpdate();
-    }
-    
     public static StatisticsManager getInstance(Connection connection) {
+        return getInstance(connection, true);
+    }
+
+    public static StatisticsManager getInstance(Connection connection, boolean startScheduler) {
         if (instance == null) {
-            instance = new StatisticsManager(connection);
+            instance = new StatisticsManager(connection, startScheduler);
         }
         return instance;
     }
     
     public static StatisticsManager getInstance() {
         return instance;
+    }
+
+    private StatisticsManager(Connection connection, boolean startScheduler) {
+        this.connection = connection;
+        if (startScheduler) {
+            startPeriodicUpdate();
+        }
+    }
+
+    public static void resetInstance() {
+        if (instance != null) {
+            instance.shutdown();
+            instance = null;
+        }
     }
     
     public interface StatisticsListener {

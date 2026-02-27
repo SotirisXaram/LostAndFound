@@ -61,14 +61,14 @@ public class AutoBackupManager {
     
     private static void performBackup() {
         try {
-            File sourceDb = new File("lostandfound.db");
+            File sourceDb = new File(SqliteDatabaseInitializer.DB_FILE);
             if (!sourceDb.exists()) {
                 logger.warning("Database file not found for backup");
                 return;
             }
             
             // Create backup directory if it doesn't exist
-            File backupDir = new File("backups");
+            File backupDir = new File(sourceDb.getParentFile(), "backups");
             if (!backupDir.exists()) {
                 backupDir.mkdirs();
             }

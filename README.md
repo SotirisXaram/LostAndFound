@@ -1,6 +1,6 @@
 # Lost and Found Management System
 
-A desktop application for managing lost and found items with database management and web dashboard.
+A robust desktop application for managing lost and found items, built with **Java** and **JavaFX** for the interface, utilizing **SQLite** or **PostgreSQL** for efficient data management.
 
 ## Features
 

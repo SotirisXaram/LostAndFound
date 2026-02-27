@@ -44,9 +44,22 @@ public class StatisticsDashboard {
         this.window.setHeight(800);
         this.window.setResizable(true);
         
-        createUI();
-        this.window.setScene(scene);
-        this.window.show();
+        try {
+            createUI();
+            this.window.setScene(scene);
+            this.window.show();
+        } catch (Throwable t) {
+            System.err.println("CRITICAL ERROR: Failed to initialize StatisticsDashboard");
+            t.printStackTrace();
+            
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Σφάλμα Dashboard");
+            alert.setHeaderText("Αποτυχία εκκίνησης στατιστικών");
+            alert.setContentText("Παρουσιάστηκε σφάλμα κατά την προετοιμασία των στατιστικών: " + t.getMessage());
+            alert.showAndWait();
+            
+            this.window.close();
+        }
     }
     
     private void createUI() {
@@ -256,7 +269,9 @@ public class StatisticsDashboard {
             while (rs.next()) {
                 String month = rs.getString("month");
                 int count = rs.getInt("count");
-                itemsSeries.getData().add(new XYChart.Data<>(month, count));
+                if (month != null) {
+                    itemsSeries.getData().add(new XYChart.Data<>(month, count));
+                }
             }
             
             String returnQuery = "SELECT strftime('%Y-%m', return_date) AS month, COUNT(*) AS count " +
@@ -269,7 +284,9 @@ public class StatisticsDashboard {
             while (rs.next()) {
                 String month = rs.getString("month");
                 int count = rs.getInt("count");
-                returnsSeries.getData().add(new XYChart.Data<>(month, count));
+                if (month != null) {
+                    returnsSeries.getData().add(new XYChart.Data<>(month, count));
+                }
             }
             
             stmt.close();
@@ -304,7 +321,9 @@ public class StatisticsDashboard {
             while (rs.next()) {
                 String month = rs.getString("month");
                 int count = rs.getInt("count");
-                series.getData().add(new XYChart.Data<>(month, count));
+                if (month != null) {
+                    series.getData().add(new XYChart.Data<>(month, count));
+                }
             }
             stmt.close();
         } catch (SQLException e) {
@@ -332,7 +351,9 @@ public class StatisticsDashboard {
             while (rs.next()) {
                 String category = rs.getString("item_category");
                 int count = rs.getInt("count");
-                chart.getData().add(new PieChart.Data(category + " (" + count + ")", count));
+                if (category != null && !category.isEmpty()) {
+                    chart.getData().add(new PieChart.Data(category + " (" + count + ")", count));
+                }
             }
             stmt.close();
         } catch (SQLException e) {
@@ -364,7 +385,9 @@ public class StatisticsDashboard {
             while (rs.next()) {
                 String month = rs.getString("month");
                 int count = rs.getInt("count");
-                series.getData().add(new XYChart.Data<>(month, count));
+                if (month != null) {
+                    series.getData().add(new XYChart.Data<>(month, count));
+                }
             }
             stmt.close();
         } catch (SQLException e) {
@@ -402,7 +425,9 @@ public class StatisticsDashboard {
             while (rs.next()) {
                 String month = rs.getString("month");
                 double returnRate = rs.getDouble("return_rate");
-                series.getData().add(new XYChart.Data<>(month, returnRate));
+                if (month != null) {
+                    series.getData().add(new XYChart.Data<>(month, returnRate));
+                }
             }
             stmt.close();
         } catch (SQLException e) {
@@ -437,7 +462,9 @@ public class StatisticsDashboard {
             while (rs.next()) {
                 String officerName = rs.getString("officer_name");
                 int count = rs.getInt("count");
-                series.getData().add(new XYChart.Data<>(officerName, count));
+                if (officerName != null) {
+                    series.getData().add(new XYChart.Data<>(officerName, count));
+                }
             }
             stmt.close();
         } catch (SQLException e) {
@@ -467,7 +494,9 @@ public class StatisticsDashboard {
             while (rs.next()) {
                 String officerName = rs.getString("officer_name");
                 int count = rs.getInt("count");
-                chart.getData().add(new PieChart.Data(officerName + " (" + count + ")", count));
+                if (officerName != null) {
+                    chart.getData().add(new PieChart.Data(officerName + " (" + count + ")", count));
+                }
             }
             stmt.close();
         } catch (SQLException e) {
@@ -495,7 +524,9 @@ public class StatisticsDashboard {
             while (rs.next()) {
                 String category = rs.getString("item_category");
                 int count = rs.getInt("count");
-                chart.getData().add(new PieChart.Data(category + " (" + count + ")", count));
+                if (category != null) {
+                    chart.getData().add(new PieChart.Data(category + " (" + count + ")", count));
+                }
             }
             stmt.close();
         } catch (SQLException e) {
@@ -529,13 +560,15 @@ public class StatisticsDashboard {
                 String month = rs.getString("month");
                 int count = rs.getInt("count");
                 
-                if (!seriesMap.containsKey(category)) {
-                    XYChart.Series<String, Number> series = new XYChart.Series<>();
-                    series.setName(category);
-                    seriesMap.put(category, series);
+                if (category != null && month != null) {
+                    if (!seriesMap.containsKey(category)) {
+                        XYChart.Series<String, Number> series = new XYChart.Series<>();
+                        series.setName(category);
+                        seriesMap.put(category, series);
+                    }
+                    
+                    seriesMap.get(category).getData().add(new XYChart.Data<>(month, count));
                 }
-                
-                seriesMap.get(category).getData().add(new XYChart.Data<>(month, count));
             }
             
             chart.getData().addAll(seriesMap.values());
@@ -552,7 +585,7 @@ public class StatisticsDashboard {
         try {
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM records");
-            int count = rs.getInt(1);
+            int count = rs.next() ? rs.getInt(1) : 0;
             stmt.close();
             return count;
         } catch (SQLException e) {
@@ -565,7 +598,7 @@ public class StatisticsDashboard {
         try {
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM returns");
-            int count = rs.getInt(1);
+            int count = rs.next() ? rs.getInt(1) : 0;
             stmt.close();
             return count;
         } catch (SQLException e) {
@@ -578,7 +611,7 @@ public class StatisticsDashboard {
         try {
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM records WHERE found_date >= date('now', 'start of month')");
-            int count = rs.getInt(1);
+            int count = rs.next() ? rs.getInt(1) : 0;
             stmt.close();
             return count;
         } catch (SQLException e) {
@@ -591,7 +624,7 @@ public class StatisticsDashboard {
         try {
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM returns WHERE return_date >= date('now', 'start of month')");
-            int count = rs.getInt(1);
+            int count = rs.next() ? rs.getInt(1) : 0;
             stmt.close();
             return count;
         } catch (SQLException e) {
@@ -604,7 +637,7 @@ public class StatisticsDashboard {
         try {
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT COUNT(DISTINCT officer_id) FROM records WHERE found_date >= date('now', '-30 days')");
-            int count = rs.getInt(1);
+            int count = rs.next() ? rs.getInt(1) : 0;
             stmt.close();
             return count;
         } catch (SQLException e) {

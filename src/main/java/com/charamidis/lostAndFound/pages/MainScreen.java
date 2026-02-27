@@ -114,7 +114,16 @@ public class MainScreen {
         MenuItem statisticsDashboard = new MenuItem("Dashboard Στατιστικών");
 
         statisticsDashboard.setOnAction(e->{
-            new StatisticsDashboard(finalConn);
+            try {
+                new StatisticsDashboard(finalConn);
+            } catch (Exception ex) {
+                logger.log(Level.SEVERE, "Failed to open Statistics Dashboard", ex);
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Σφάλμα");
+                alert.setHeaderText("Αδυναμία ανοίγματος στατιστικών");
+                alert.setContentText("Παρουσιάστηκε σφάλμα κατά το άνοιγμα του dashboard. Παρακαλώ δοκιμάστε ξανά.");
+                alert.showAndWait();
+            }
         });
 
         diagrams.getItems().addAll(statisticsDashboard);
@@ -298,7 +307,18 @@ public class MainScreen {
         });
 
         Button statisticsBtn = createActionButton("Στατιστικά", "Προβολή στατιστικών", "paper.png", Color.rgb(241, 196, 15));
-        statisticsBtn.setOnAction(e -> new StatisticsDashboard(finalConn)); // Same as menubar
+        statisticsBtn.setOnAction(e -> {
+            try {
+                new StatisticsDashboard(finalConn);
+            } catch (Exception ex) {
+                logger.log(Level.SEVERE, "Failed to open Statistics Dashboard from quick action", ex);
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Σφάλμα");
+                alert.setHeaderText("Αδυναμία ανοίγματος στατιστικών");
+                alert.setContentText("Παρουσιάστηκε σφάλμα κατά το άνοιγμα του dashboard. Παρακαλώ δοκιμάστε ξανά.");
+                alert.showAndWait();
+            }
+        });
 
         Button profileBtn = createActionButton("Προφίλ", "Διαχείριση προφίλ", "open-book.png", Color.rgb(52, 73, 94));
         profileBtn.setOnAction(e -> {

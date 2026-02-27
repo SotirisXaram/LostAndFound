@@ -1,6 +1,7 @@
 package com.charamidis.lostAndFound.utils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,7 +14,32 @@ import java.util.logging.Logger;
 
 public class SqliteDatabaseInitializer {
     private static final Logger logger = AppLogger.getLogger();
-    private static final String DB_URL = "jdbc:sqlite:lostandfound.db";
+    public static String DB_FILE;
+    public static String DB_URL;
+
+    static {
+        resetToDefaultPath();
+    }
+
+    public static void resetToDefaultPath() {
+        File localDb = new File("lostandfound.db");
+        if (localDb.exists() && localDb.canWrite()) {
+            DB_FILE = localDb.getAbsolutePath();
+        } else {
+            String dataFolder = ImageManager.getDataFolderPath();
+            File dataDir = new File(dataFolder);
+            if (!dataDir.exists()) {
+                dataDir.mkdirs();
+            }
+            DB_FILE = new File(dataDir, "lostandfound.db").getAbsolutePath();
+        }
+        DB_URL = "jdbc:sqlite:" + DB_FILE;
+    }
+
+    public static void setDbFileForTesting(File file) {
+        DB_FILE = file.getAbsolutePath();
+        DB_URL = "jdbc:sqlite:" + DB_FILE;
+    }
     
     public static void initializeDatabase() {
         try (Connection conn = DriverManager.getConnection(DB_URL)) {
