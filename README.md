@@ -30,16 +30,17 @@ A streamlined interface for tracking, processing, and managing all lost and foun
 ![Main Dashboard](usageScreens/mainScreen.png)
 *Centralized dashboard providing an overview of all active and resolved records.*
 
-````carousel
 ![Records Management](usageScreens/RecordsManagement.png)
-<!-- slide -->
+*Detailed record management interface for adding and editing item information.*
+
 ![Extended Records View](usageScreens/RecordsManagement2.png)
-<!-- slide -->
+*Comprehensive view for large-scale record tracking and filtering.*
+
 ![Item Return Processing](usageScreens/ReturnForRecordItem.png)
-<!-- slide -->
+*Automated workflow for processing item returns with digital verification.*
+
 ![Returns History](usageScreens/ViewWindowForReturns.png)
-````
-*Comprehensive management system for adding records, tracking item status, and processing returns with automated logging.*
+*Historical log of all processed returns for audit and tracking purposes.*
 
 ---
 
@@ -50,21 +51,21 @@ Advanced lookup capabilities with seamless integration across SQLite and Postgre
 *Sophisticated filtering and search engine for rapid item discovery within the database.*
 
 ![Shareable Records](usageScreens/ShareableLinkToRecords.png)
-*Generate unique reference links and QR codes for efficient item tracking and communication.*
+*Public-facing interface allowing users who have lost an item to view and claim their records via unique shareable links.*
 
 ---
 
 ### 📊 Analytics & Impact Reports
 Comprehensive reporting module providing deep insights into system performance and item recovery rates.
 
-````carousel
 ![Analytics Overview](usageScreens/statistics-1.png)
-<!-- slide -->
+*Visual overview of system performance and item processing metrics.*
+
 ![Trend Analysis](usageScreens/statistics-2.png)
-<!-- slide -->
+*Detailed analysis of lost and found trends over specific time periods.*
+
 ![Distribution Metrics](usageScreens/statistics-3.png)
-````
-*Visual analytics engine delivering real-time reports on recovery trends, item categories, and operational efficiency.*
+*Categorical distribution reports for item types and recovery status.*
 
 ---
 
@@ -74,16 +75,17 @@ Comprehensive tools for user management, server configuration, and mission-criti
 ![Administration Dashboard](usageScreens/WebAdminDashboardMain.png)
 *Technical command center for system administrators.*
 
-````carousel
 ![User Directory](usageScreens/UserManagement.png)
-<!-- slide -->
+*Administrative interface for managing system users and roles.*
+
 ![Access Controls](usageScreens/AddNewUsers.png)
-<!-- slide -->
+*Simplified provisioning for new administrative and staff accounts.*
+
 ![Web Monitoring](usageScreens/WebAdminDashboard.png)
-<!-- slide -->
+*Real-time monitoring of the web server status and connected clients.*
+
 ![System Settings](usageScreens/AutomaticBackUp:EnableWebServer:ManualBackup.png)
-````
-*Enterprise-grade management tools for user provisioning, web server orchestration, and automated database redundancy.*
+*Unified control panel for web server orchestration and automated database redundancy.*
 
 ## Requirements
 
