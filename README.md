@@ -14,6 +14,77 @@ A robust desktop application for managing lost and found items, built with **Jav
 - Web dashboard for remote monitoring
 - QR code generation for public record access
 
+## 📸 Application Showcase
+
+### 🔐 Authentication & Security
+Access is protected by a professional login system ensuring data integrity and user accountability.
+
+![Secure Sign-in](usageScreens/Sign-in.png)
+*Professional authentication interface with secure credential management.*
+
+---
+
+### 📦 Records & Item Management
+A streamlined interface for tracking, processing, and managing all lost and found items.
+
+![Main Dashboard](usageScreens/mainScreen.png)
+*Centralized dashboard providing an overview of all active and resolved records.*
+
+````carousel
+![Records Management](usageScreens/RecordsManagement.png)
+<!-- slide -->
+![Extended Records View](usageScreens/RecordsManagement2.png)
+<!-- slide -->
+![Item Return Processing](usageScreens/ReturnForRecordItem.png)
+<!-- slide -->
+![Returns History](usageScreens/ViewWindowForReturns.png)
+````
+*Comprehensive management system for adding records, tracking item status, and processing returns with automated logging.*
+
+---
+
+### 🔍 Search & Data Synchronization
+Advanced lookup capabilities with seamless integration across SQLite and PostgreSQL environments.
+
+![Advanced Search](usageScreens/AdvancedSearchInDatabases.png)
+*Sophisticated filtering and search engine for rapid item discovery within the database.*
+
+![Shareable Records](usageScreens/ShareableLinkToRecords.png)
+*Generate unique reference links and QR codes for efficient item tracking and communication.*
+
+---
+
+### 📊 Analytics & Impact Reports
+Comprehensive reporting module providing deep insights into system performance and item recovery rates.
+
+````carousel
+![Analytics Overview](usageScreens/statistics-1.png)
+<!-- slide -->
+![Trend Analysis](usageScreens/statistics-2.png)
+<!-- slide -->
+![Distribution Metrics](usageScreens/statistics-3.png)
+````
+*Visual analytics engine delivering real-time reports on recovery trends, item categories, and operational efficiency.*
+
+---
+
+### 🛠 Administration & System Control
+Comprehensive tools for user management, server configuration, and mission-critical backups.
+
+![Administration Dashboard](usageScreens/WebAdminDashboardMain.png)
+*Technical command center for system administrators.*
+
+````carousel
+![User Directory](usageScreens/UserManagement.png)
+<!-- slide -->
+![Access Controls](usageScreens/AddNewUsers.png)
+<!-- slide -->
+![Web Monitoring](usageScreens/WebAdminDashboard.png)
+<!-- slide -->
+![System Settings](usageScreens/AutomaticBackUp:EnableWebServer:ManualBackup.png)
+````
+*Enterprise-grade management tools for user provisioning, web server orchestration, and automated database redundancy.*
+
 ## Requirements
 
 - Java 11 or higher
